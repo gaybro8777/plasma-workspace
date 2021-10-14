@@ -220,6 +220,7 @@ private Q_SLOTS:
     void updateMask();
     void updateEnabledBorders();
     void updatePadding();
+    void updateFloating();
 
 private:
     int readConfigValueWithFallBack(const QString &key, int defaultValue);

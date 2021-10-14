@@ -98,6 +98,7 @@ PanelView::PanelView(ShellCorona *corona, QScreen *targetScreen, QWindow *parent
     rootContext()->setContextProperty(QStringLiteral("panel"), this);
     setSource(m_corona->kPackage().fileUrl("views", QStringLiteral("Panel.qml")));
     updatePadding();
+    updateFloating();
 }
 
 PanelView::~PanelView()
@@ -1263,12 +1264,17 @@ void PanelView::handleQmlStatusChange(QQmlComponent::Status status)
         disconnect(this, &QuickViewSharedEngine::statusChanged, this, &PanelView::handleQmlStatusChange);
 
         updatePadding();
+        updateFloating();
         int paddingSignal = rootObject->metaObject()->indexOfSignal(SIGNAL(bottomPaddingChanged()));
         if (paddingSignal >= 0) {
             connect(rootObject, SIGNAL(bottomPaddingChanged()), this, SLOT(updatePadding()));
             connect(rootObject, SIGNAL(topPaddingChanged()), this, SLOT(updatePadding()));
             connect(rootObject, SIGNAL(rightPaddingChanged()), this, SLOT(updatePadding()));
             connect(rootObject, SIGNAL(leftPaddingChanged()), this, SLOT(updatePadding()));
+        }
+        int floatingSignal = rootObject->metaObject()->indexOfSignal(SIGNAL(floatingChanged()));
+        if (floatingSignal >= 0) {
+            connect(rootObject, SIGNAL(floatingChanged()), this, SLOT(updateFloating()));
         }
 
         const QVariant maskProperty = rootObject->property("panelMask");
@@ -1393,6 +1399,17 @@ void PanelView::updatePadding()
     m_rightPadding = rootObject()->property("rightPadding").toInt();
     m_topPadding = rootObject()->property("topPadding").toInt();
     m_bottomPadding = rootObject()->property("bottomPadding").toInt();
+}
+
+void PanelView::updateFloating()
+{
+    if (!rootObject())
+        return;
+    if (rootObject()->property("floating").toBool()) {
+        PanelShadows::self()->removeWindow(this);
+    } else {
+        PanelShadows::self()->addWindow(this);
+    }
 }
 
 #include "moc_panelview.cpp"

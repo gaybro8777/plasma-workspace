@@ -28,7 +28,7 @@ PlasmaCore.FrameSvgItem {
     }
 
     z: -1 // always draw behind icons
-    opacity: systemTrayState.expanded ? 1 : 0
+    opacity: systemTrayState.expanded || systemTrayState.keyboardNavigation ? 1 : 0
 
     imagePath: "widgets/tabbar"
     prefix: {
@@ -55,6 +55,10 @@ PlasmaCore.FrameSvgItem {
     // update when System Tray is expanded - applet activated or hidden icons shown
     Connections {
         target: systemTrayState
+
+        function onKeyboardNavigationChanged() {
+            Qt.callLater(updateHighlightedItem);
+        }
 
         function onActiveAppletChanged() {
             Qt.callLater(updateHighlightedItem);
@@ -104,6 +108,8 @@ PlasmaCore.FrameSvgItem {
             } else { // 'Show hiden items' popup
                 changeHighlightedItem(parent, forceEdgeHighlight=true);
             }
+        } else if (systemTrayState.keyboardNavigation) {
+            changeHighlightedItem(parent, forceEdgeHighlight=true);
         } else {
             highlightedItem = null;
         }

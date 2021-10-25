@@ -8,9 +8,11 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.kirigami 2.14 as Kirigami
 
 PlasmaCore.ToolTipArea {
     id: tooltip
+    activeFocusOnTab: true
 
     property bool vertical: plasmoid.formFactor === PlasmaCore.Types.Vertical
     property int iconSize: PlasmaCore.Units.iconSizes.smallMedium
@@ -18,6 +20,12 @@ PlasmaCore.ToolTipArea {
     implicitHeight: iconSize
 
     subText: systemTrayState.expanded ? i18n("Close popup") : i18n("Show hidden icons")
+    Keys.onReturnPressed: {
+        systemTrayState.expanded = !systemTrayState.expanded
+        systemTrayState.keyboardActiveApplet = this
+    }
+    Keys.onEnterPressed: Keys.onReturnPressed(event);
+    Keys.onSpacePressed: Keys.onReturnPressed(event);
 
     MouseArea {
         id: arrowMouseArea
@@ -25,7 +33,18 @@ PlasmaCore.ToolTipArea {
         onClicked: systemTrayState.expanded = !systemTrayState.expanded
 
         readonly property int arrowAnimationDuration: PlasmaCore.Units.shortDuration
+        Rectangle
+        {
+            anchors.centerIn: parent
+            width: parent.width + PlasmaCore.Units.smallSpacing
+            height: parent.height + PlasmaCore.Units.smallSpacing
+            radius:PlasmaCore.Units.devicePixelRatio * 3
+            visible: tooltip.activeFocus
 
+            color: Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.highlightColor, {"alpha": 0.33*255})
+            border.color: PlasmaCore.ColorScope.highlightColor
+            border.width: 1
+        }
         PlasmaCore.Svg {
             id: arrowSvg
             imagePath: "widgets/arrows"

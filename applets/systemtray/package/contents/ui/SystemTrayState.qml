@@ -14,8 +14,14 @@ QtObject {
     // - there is an active applet or
     // - 'Status and Notification' with hidden items is shown
     property bool expanded: false
+    //true when System Tray has keyboard focus
+    property bool keyboardNavigation: false
+
     //set when there is an applet selected
     property Item activeApplet
+
+    //keep last active applet
+    property Item keyboardActiveApplet
 
     //allow expanded change only when activated at least once
     //this is to suppress expanded state change during Plasma startup
@@ -71,10 +77,22 @@ QtObject {
                 expanded = plasmoid.expanded
             } else {
                 plasmoid.expanded = expanded
+                if (!expanded) {
+                    keyboardNavigation = false
+                }
             }
         }
     }
 
+    property Connections plasmoidParentConnections: Connections {
+        target: plasmoid.parent.parent.parent
+        function onActiveFocusChanged() {
+            if (keyboardNavigation && expanded) { // Expand from keyboard navigation, so we want to keep it
+                return;
+            }
+            keyboardNavigation = plasmoid.parent.parent.parent.activeFocus
+        }
+    }
     property Connections activeAppletConnections: Connections {
         target: activeApplet
 

@@ -32,9 +32,31 @@ AbstractItem {
             }
             return model.Icon ? model.Icon : model.IconName
         }
-        active: taskIcon.containsMouse
+        active: taskIcon.containsMouse || taskIcon.activeFocus
     }
 
+    Keys.onReturnPressed: {
+        // We simulate user click on center of icon
+        var globalPosition = taskIcon.mapToGlobal(taskIcon.width / 2, taskIcon.height / 2);
+        var pos = plasmoid.nativeInterface.popupPosition(taskIcon, globalPosition.x, globalPosition.y);
+
+        var service = model.Service;
+        var operation = service.operationDescription("Activate");
+
+        operation.x = globalPosition.x;
+        operation.y = globalPosition.y;
+        var job = service.startOperationCall(operation);
+        job.finished.connect(function () {
+            if (!job.result) {
+                // On error try to invoke the context menu.
+                // Workaround primarily for apps using libappindicator.
+                openContextMenu(pos);
+            }
+        });
+        taskIcon.activated();
+    }
+    Keys.onEnterPressed: Keys.onReturnPressed(event);
+    Keys.onSpacePressed: Keys.onReturnPressed(event);
     onContextMenu: {
         openContextMenu(plasmoid.nativeInterface.popupPosition(taskIcon, mouse.x, mouse.y))
     }

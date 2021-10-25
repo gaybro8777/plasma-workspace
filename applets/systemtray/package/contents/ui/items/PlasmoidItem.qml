@@ -4,7 +4,7 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-import QtQuick 2.1
+import QtQuick 2.15
 import QtQml 2.15
 
 import org.kde.plasma.core 2.0 as PlasmaCore
@@ -21,6 +21,15 @@ AbstractItem {
     mainItem: applet && applet.toolTipItem ? applet.toolTipItem : null
     textFormat: applet ? applet.toolTipTextFormat : ""
     active: systemTrayState.activeApplet !== applet
+
+    Keys.onReturnPressed: {
+        if (!applet) {
+            return
+        }
+        applet.onActivated();
+    }
+    Keys.onEnterPressed: Keys.onReturnPressed(event);
+    Keys.onSpacePressed: Keys.onReturnPressed(event);
 
     onClicked: {
         if (!applet) {

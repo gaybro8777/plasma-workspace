@@ -12,6 +12,7 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.draganddrop 2.0 as DnD
 import org.kde.kirigami 2.5 as Kirigami
 
+
 import "items"
 
 MouseArea {
@@ -103,10 +104,11 @@ MouseArea {
 
         GridView {
             id: tasksGrid
-
+            property bool disableKeyboardFocusable: true
             Layout.alignment: Qt.AlignCenter
 
             interactive: false //disable features we don't need
+
             flow: vertical ? GridView.LeftToRight : GridView.TopToBottom
 
             // The icon size to display when not using the auto-scaling setting
@@ -218,7 +220,14 @@ MouseArea {
             id: expandedRepresentation
 
             Keys.onEscapePressed: {
+                let keyboardNavigation = systemTrayState.keyboardNavigation
                 systemTrayState.expanded = false
+                if (keyboardNavigation) {
+                    plasmoid.status = PlasmaCore.Types.AcceptingInputStatus
+                    if (systemTrayState.keyboardActiveApplet) {
+                        systemTrayState.keyboardActiveApplet.forceActiveFocus()
+                    }
+                }
             }
 
             // Draws a line between the applet dialog and the panel

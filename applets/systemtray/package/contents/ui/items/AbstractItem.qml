@@ -10,9 +10,11 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents3
+import org.kde.kirigami 2.14 as Kirigami
 
 PlasmaCore.ToolTipArea {
     id: abstractItem
+    activeFocusOnTab: true
 
     height: inVisibleLayout ? visibleLayout.cellHeight : hiddenTasks.cellHeight
     width: inVisibleLayout ? visibleLayout.cellWidth : hiddenTasks.cellWidth
@@ -128,6 +130,19 @@ PlasmaCore.ToolTipArea {
             implicitWidth: root.vertical && abstractItem.inVisibleLayout ? abstractItem.width : size
             implicitHeight: !root.vertical && abstractItem.inVisibleLayout ? abstractItem.height : size
             Layout.topMargin: abstractItem.inHiddenLayout ? Math.round(PlasmaCore.Units.smallSpacing * 1.5): 0
+
+            Rectangle
+            {
+                anchors.centerIn: parent
+                width: parent.width + PlasmaCore.Units.smallSpacing
+                height: parent.height + PlasmaCore.Units.smallSpacing
+                radius:PlasmaCore.Units.devicePixelRatio * 3
+                visible: abstractItem.inVisibleLayout && abstractItem.parent.activeFocus
+
+                color: Kirigami.ColorUtils.adjustColor(PlasmaCore.ColorScope.highlightColor, {"alpha": 0.33*255})
+                border.color: PlasmaCore.ColorScope.highlightColor
+                border.width: 1
+            }
         }
         PlasmaComponents3.Label {
             id: label

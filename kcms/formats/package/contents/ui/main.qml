@@ -12,6 +12,8 @@ import org.kde.kcm 1.2 as KCM
 import LocaleListModel 1.0
 
 KCM.ScrollViewKCM {
+    property bool langPageSelected: false
+
     id: root
     implicitHeight: Kirigami.Units.gridUnit * 40
     implicitWidth: Kirigami.Units.gridUnit * 20
@@ -23,24 +25,39 @@ KCM.ScrollViewKCM {
     view: ListView {
         model: kcm.optionsModel
         delegate: Kirigami.BasicListItem {
-            text: model.name
-            subtitle: model.localeName
-            trailing: QQC2.Label {
-                text: model.example
-            }
+            text: model.name + " - " + model.localeName
+            subtitle: model.example
             reserveSpaceForSubtitle: true
             onClicked: {
+                if (model.page === "lang") {
+                    languageSelectPage.active = true;
+                    kcm.push(languageSelectPage.item);
+                    langPageSelected = true;
+                    return;
+                }
+
+                if (langPageSelected) {
+                    langPageSelected = false;
+                    kcm.pop();
+                }
+
                 if (kcm.depth === 1) {
                     localeListPage.active = true;
-                    localeListPage.item.setting = page;
+                    localeListPage.item.setting = model.page;
                     kcm.push(localeListPage.item);
                 } else {
-                    kcm.getSubPage(0).setting = page;
+                    kcm.getSubPage(0).setting = model.page;
                     kcm.getSubPage(0).filterText = '';
                     kcm.currentIndex = 1;
                 }
             }
         }
+    }
+
+    Loader {
+        id: languageSelectPage
+        active: false
+        source: "LanguageSelectPage.qml"
     }
 
     Loader {
@@ -85,11 +102,12 @@ KCM.ScrollViewKCM {
                 delegate: Kirigami.BasicListItem {
                     icon: model.flag
                     text: model.display
-                    subtitle: model.localeName
+                    subtitle: model.example ? model.example : ''
                     trailing: QQC2.Label {
                         color: Kirigami.Theme.disabledTextColor
-                        text: model.example ? model.example : ''
+                        text: model.localeName
                     }
+
                     onClicked: {
                         if (model.localeName !== i18n("Default")) {
                             switch (setting) {

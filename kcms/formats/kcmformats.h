@@ -18,11 +18,12 @@ class KCMFormats : public KQuickAddons::ManagedConfigModule
     Q_OBJECT
     Q_PROPERTY(FormatsSettings *settings READ settings CONSTANT)
     Q_PROPERTY(OptionsModel *optionsModel READ optionsModel CONSTANT)
+
 public:
     explicit KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &list = QVariantList());
     virtual ~KCMFormats() override = default;
-
     FormatsSettings *settings() const;
+
     OptionsModel *optionsModel() const;
     Q_INVOKABLE QQuickItem *getSubPage(int index) const; // proxy from KQuickAddons to Qml
     Q_INVOKABLE void unset(const QString &setting);
@@ -30,5 +31,6 @@ public:
 private:
     QHash<QString, QString> m_cachedFlags;
 
-    OptionsModel *m_optionsModel = nullptr;
+    OptionsModel *m_optionsModel;
+    FormatsSettings *m_settings;
 };

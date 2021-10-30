@@ -8,11 +8,12 @@
 
 #include "exampleutility.cpp"
 #include "formatssettings.h"
+#include "kcmformats.h"
 #include "optionsmodel.h"
 
-OptionsModel::OptionsModel(QObject *parent)
+OptionsModel::OptionsModel(KCMFormats *parent)
     : QAbstractListModel(parent)
-    , m_settings(new FormatsSettings(this))
+    , m_settings(parent->settings())
 {
     m_staticNames = {{{i18n("Region"), QStringLiteral("lang")},
                       {i18n("Number"), QStringLiteral("numeric")},
@@ -94,7 +95,6 @@ QHash<int, QByteArray> OptionsModel::roleNames() const
 void OptionsModel::handleLangChange()
 {
     Q_EMIT dataChanged(createIndex(0, 0), createIndex(0, 0), {Subtitle, Example});
-
     QString defaultVal = i18n("Default");
     if (m_settings->numeric() == defaultVal) {
         Q_EMIT dataChanged(createIndex(1, 0), createIndex(1, 0), {Subtitle, Example});
@@ -133,8 +133,4 @@ QLocale OptionsModel::localeWithDefault(const QString &val) const
     } else {
         return QLocale(m_settings->lang());
     }
-}
-FormatsSettings *OptionsModel::settings() const
-{
-    return m_settings;
 }

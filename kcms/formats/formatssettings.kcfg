@@ -7,9 +7,6 @@
   <include>KLocalizedString</include>
   <kcfgfile name="plasma-localerc" />
   <group name="Formats">
-    <entry name="useDetailed" type="Bool">
-        <default>false</default>
-    </entry>
     <entry key="LANG" name="lang" type="String">
         <default code="true">QString::fromLocal8Bit(qgetenv("LANG"))</default>
     </entry>
@@ -18,9 +15,7 @@
             auto lc_numeric {QString::fromLocal8Bit(qgetenv("LC_NUMERIC"))};
             lc_numeric = lc_numeric.isEmpty() ? i18n("Default") : lc_numeric;
         </code>
-        <default code="true">
-            lc_numeric
-        </default>
+        <default code="true">lc_numeric</default>
     </entry>
     <entry key="LC_TIME" name="time" type="String">
         <code>

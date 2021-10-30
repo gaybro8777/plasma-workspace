@@ -15,6 +15,7 @@
 
 #include "formatssettings.h"
 #include "kcmformats.h"
+#include "languagelistmodel.h"
 #include "localelistmodel.h"
 #include "optionsmodel.h"
 
@@ -22,7 +23,6 @@ K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_formats.json")
 
 KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
     : KQuickAddons::ManagedConfigModule(parent, data, args)
-    , m_optionsModel(new OptionsModel(this))
 {
     KAboutData *aboutData = new KAboutData(QStringLiteral("kcm_formats"),
                                            i18nc("@title", "Formats"),
@@ -37,13 +37,17 @@ KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVari
     setQuickHelp(i18n("You can configure the formats used for time, dates, money and other numbers here."));
 
     qmlRegisterAnonymousType<FormatsSettings>("kcmformats", 1);
-    qmlRegisterType<LocaleListModel>("LocaleListModel", 1, 0, "LocaleListModel");
     qmlRegisterAnonymousType<OptionsModel>("kcmformats_optionsmodel", 1);
+    qmlRegisterAnonymousType<SelectedLanguageModel>("kcmformats_selectedLanguageModel", 1);
+    qmlRegisterType<LocaleListModel>("LocaleListModel", 1, 0, "LocaleListModel");
+    qmlRegisterType<LanguageListModel>("LanguageListModel", 1, 0, "LanguageListModel");
+    m_settings = new FormatsSettings(this);
+    m_optionsModel = new OptionsModel(this);
 }
 
 FormatsSettings *KCMFormats::settings() const
 {
-    return m_optionsModel->settings();
+    return m_settings;
 }
 
 OptionsModel *KCMFormats::optionsModel() const

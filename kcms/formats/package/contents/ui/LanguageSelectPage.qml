@@ -36,8 +36,8 @@ KCM.ScrollViewKCM {
                     Kirigami.ListItemDragHandle {
                         listItem: listItem
                         listView: languageListView
+                        visible: languageListView.count > 1
                         onMoveRequested: {
-                            console.log(oldIndex, newIndex);
                             languageListModel.selectedLanguageModel.move(oldIndex, newIndex);
                         }
                     }
@@ -108,16 +108,16 @@ KCM.ScrollViewKCM {
 //                },
                 Kirigami.Action {
                     enabled: index > 0
-                    visible: languagesList.count > 1
+                    visible: languageListView.count > 1
                     iconName: "go-top"
                     tooltip: i18nc("@info:tooltip", "Promote to default")
                     onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                 },
                 Kirigami.Action {
                     iconName: "edit-delete"
-                    visible: languagesList.count > 1
+                    visible: languageListView.count > 1
                     tooltip: i18nc("@info:tooltip", "Remove")
-                    onTriggered: languageListModel.selectedLanguageModel.remove(model.LanguageCode);
+                    onTriggered: languageListModel.selectedLanguageModel.remove(index);
                 }]
             }
         }
@@ -131,18 +131,29 @@ KCM.ScrollViewKCM {
     Component {
         id: addLanguageItemComponent
 
-        Kirigami.BasicListItem {
+        Kirigami.CheckableListItem  {
             id: languageItem
 
             width: availableLanguagesList.width
             reserveSpaceForIcon: false
 
-            label: model.display
+            label: model.nativeName
+            action: Kirigami.Action {
+                onTriggered: {
+                    checked = !checked;
+                    if (checked) {
+                        addLanguagesSheet.selectedLanguages.push(model.languageCode);
+                        addLanguagesButton.enabled = true;
+                    } else {
+                        addLanguagesSheet.selectedLanguages = addLanguagesSheet.selectedLanguages.filter(
+                                    (item) => item !== model.languageCode);
 
-            checkable: true
-            onCheckedChanged: {
+                        if (addLanguagesSheet.selectedLanguages.length === 0) {
+                            addLanguagesButton.enabled = false;
+                        }
+                    }
+                }
             }
-
             data: [Connections {
                 target: addLanguagesSheet
 
@@ -155,6 +166,8 @@ KCM.ScrollViewKCM {
 
     Kirigami.OverlaySheet {
         id: addLanguagesSheet
+        property var selectedLanguages: []
+        onSheetOpenChanged: selectedLanguages = []
 
         parent: languageSelectPage
 
@@ -180,9 +193,26 @@ KCM.ScrollViewKCM {
                 text: i18nc("@action:button", "Add")
                 enabled: false
                 onClicked: {
+                    languageListModel.selectedLanguageModel.addLanguages(addLanguagesSheet.selectedLanguages);
                     addLanguagesSheet.sheetOpen = false;
                 }
             }
+        }
+    }
+    footer: RowLayout {
+        id: footerLayout
+
+        QQC2.Button {
+            Layout.alignment: Qt.AlignRight
+
+            enabled: availableLanguagesList.count
+
+            text: i18nc("@action:button", "Add languages…")
+
+            onClicked: addLanguagesSheet.sheetOpen = !addLanguagesSheet.sheetOpen
+
+            checkable: true
+            checked: addLanguagesSheet.sheetOpen
         }
     }
 }

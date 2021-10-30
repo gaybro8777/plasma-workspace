@@ -13,10 +13,12 @@ class LanguageListModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(SelectedLanguageModel *selectedLanguageModel READ selectedLanguageModel CONSTANT)
 public:
+    enum Roles {NativeName = Qt::DisplayRole, LanguageCode};
     explicit LanguageListModel(QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
     SelectedLanguageModel *selectedLanguageModel() const;
 
@@ -38,7 +40,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     Q_INVOKABLE void move(int from, int to);
+    Q_INVOKABLE void remove(int index);
     Q_INVOKABLE void setFormatsSettings(QObject *settings);
+    Q_INVOKABLE void addLanguages(const QStringList &langs);
 
 private:
     void saveLanguages();

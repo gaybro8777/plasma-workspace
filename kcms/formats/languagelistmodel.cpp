@@ -24,13 +24,23 @@ int LanguageListModel::rowCount(const QModelIndex &parent) const
 }
 QVariant LanguageListModel::data(const QModelIndex &index, int role) const
 {
-    Q_UNUSED(role)
     auto row = index.row();
     if (row < 0 || row >= m_availableLanguages.size()) {
         return {};
     }
+    switch (role) {
+    case NativeName:
+        return languageCodeToName(m_availableLanguages.at(row));
+    case LanguageCode:
+        return m_availableLanguages.at(row);
+    default:
+        return QVariant();
+    }
+}
 
-    return languageCodeToName(m_availableLanguages.at(row));
+QHash<int, QByteArray> LanguageListModel::roleNames() const
+{
+    return {{NativeName, "nativeName"}, {LanguageCode, "languageCode"}};
 }
 
 QString LanguageListModel::languageCodeToName(const QString &languageCode)
@@ -103,8 +113,37 @@ void SelectedLanguageModel::move(int from, int to)
 
     beginResetModel();
     m_selectedLanguages.move(from, to);
-    saveLanguages();
     endResetModel();
+    saveLanguages();
+}
+
+void SelectedLanguageModel::remove(int index)
+{
+    if (index < 0 || index >= m_selectedLanguages.size()) {
+        return;
+    }
+    beginRemoveRows(QModelIndex(), index, index);
+    m_selectedLanguages.removeAt(index);
+    endRemoveRows();
+}
+
+void SelectedLanguageModel::addLanguages(const QStringList &langs)
+{
+    if (langs.empty()) {
+        return;
+    }
+    QStringList unique_langs;
+    for (const auto &lang : langs) {
+        if (m_selectedLanguages.indexOf(lang) == -1) {
+            unique_langs.push_back(lang);
+        }
+    }
+    if (!unique_langs.empty()) {
+        beginInsertRows(QModelIndex(), m_selectedLanguages.size(), m_selectedLanguages.size() + unique_langs.size() - 1);
+        std::copy(unique_langs.begin(), unique_langs.end(), std::back_inserter(m_selectedLanguages));
+        endInsertRows();
+        saveLanguages();
+    }
 }
 
 void SelectedLanguageModel::saveLanguages()

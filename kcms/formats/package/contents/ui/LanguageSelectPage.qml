@@ -19,200 +19,67 @@ KCM.ScrollViewKCM {
     LanguageListModel {
         id: languageListModel
         Component.onCompleted: {
-            languageListModel.selectedLanguageModel.setFormatsSettings(kcm.settings);
+            languageListModel.setFormatsSettings(kcm.settings);
         }
     }
-    Component {
-        id: languagesListItemComponent
 
-        Item {
-            width: ListView.view.width
-            height: listItem.implicitHeight
-
-            Kirigami.SwipeListItem {
-                id: listItem
-
-                contentItem: RowLayout {
-                    Kirigami.ListItemDragHandle {
-                        listItem: listItem
-                        listView: languageListView
-                        visible: languageListView.count > 1
-                        onMoveRequested: {
-                            languageListModel.selectedLanguageModel.move(oldIndex, newIndex);
-                        }
-                    }
-
-//                    QQC2.BusyIndicator {
-//                        visible: model.IsInstalling
-//                        running: visible
-//                        // the control style (e.g. org.kde.desktop) may force a padding that will shrink the indicator way down. ignore it.
-//                        padding: 0
-
-//                        Layout.alignment: Qt.AlignVCenter
-
-//                        implicitWidth: Kirigami.Units.iconSizes.small
-//                        implicitHeight: implicitWidth
-
-//                        QQC2.ToolTip {
-//                            text: xi18nc('@info:tooltip/rich',
-//                                         'Installing missing packages to complete this translation.')
-//                        }
-//                    }
-
-//                    Kirigami.Icon {
-//                        visible: model.IsIncomplete
-
-//                        Layout.alignment: Qt.AlignVCenter
-
-//                        implicitWidth: Kirigami.Units.iconSizes.small
-//                        implicitHeight: implicitWidth
-
-//                        source: "data-warning"
-//                        color: Kirigami.Theme.negativeTextColor
-//                        MouseArea {
-//                            id: area
-//                            anchors.fill: parent
-//                            hoverEnabled: true
-//                        }
-//                        QQC2.ToolTip {
-//                            visible: area.containsMouse
-//                            text: xi18nc('@info:tooltip/rich',
-//                                         `Not all translations for this language are installed.
-//                                          Use the <interface>Install Missing Packages</interface> button to download
-//                                          and install all missing packages.`)
-//                        }
-
-//                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter
-
-                        text: switch(index){
-                            // Don't assing undefind to string if the index is invalid.
-                            case -1: ""; break;
-                            case 0: i18nc("@item:inlistbox 1 = Language name", "%1 (Default)", model.display); break;
-                            default: model.display; break;
-                        }
-
-                        color: (listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate)) ? listItem.activeTextColor : listItem.textColor
-                    }
-                }
-
-            actions: [
-//                Kirigami.Action {
-//                    visible: model.IsIncomplete
-//                    iconName: "install"
-//                    tooltip: i18nc("@info:tooltip", "Install Missing Packages")
-//                    onTriggered: model.Object.complete()
-//                },
-                Kirigami.Action {
-                    enabled: index > 0
-                    visible: languageListView.count > 1
-                    iconName: "go-top"
-                    tooltip: i18nc("@info:tooltip", "Promote to default")
-                    onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
-                },
-                Kirigami.Action {
-                    iconName: "edit-delete"
-                    visible: languageListView.count > 1
-                    tooltip: i18nc("@info:tooltip", "Remove")
-                    onTriggered: languageListModel.selectedLanguageModel.remove(index);
-                }]
-            }
-        }
-    }
     view: ListView {
-        id: languageListView
-        model: languageListModel.selectedLanguageModel
-        delegate: languagesListItemComponent
-    }
-
-    Component {
-        id: addLanguageItemComponent
-
-        Kirigami.CheckableListItem  {
-            id: languageItem
-
-            width: availableLanguagesList.width
-            reserveSpaceForIcon: false
-
-            label: model.nativeName
-            action: Kirigami.Action {
-                onTriggered: {
-                    checked = !checked;
-                    if (checked) {
-                        addLanguagesSheet.selectedLanguages.push(model.languageCode);
-                        addLanguagesButton.enabled = true;
-                    } else {
-                        addLanguagesSheet.selectedLanguages = addLanguagesSheet.selectedLanguages.filter(
-                                    (item) => item !== model.languageCode);
-
-                        if (addLanguagesSheet.selectedLanguages.length === 0) {
-                            addLanguagesButton.enabled = false;
-                        }
-                    }
-                }
+        property string currentLang: ''
+        id: languageView
+        model: languageListModel
+        currentIndex: languageListModel.currentIndex
+        delegate: Kirigami.BasicListItem {
+            text: model.nativeName
+            icon: model.flag
+            trailing: QQC2.Label {
+                color: Kirigami.Theme.disabledTextColor
+                text: model.languageCode
             }
-            data: [Connections {
-                target: addLanguagesSheet
-
-                function onSheetOpenChanged() {
-                    languageItem.checked = false
-                }
-            }]
-        }
-    }
-
-    Kirigami.OverlaySheet {
-        id: addLanguagesSheet
-        property var selectedLanguages: []
-        onSheetOpenChanged: selectedLanguages = []
-
-        parent: languageSelectPage
-
-        topPadding: 0
-        leftPadding: 0
-        rightPadding: 0
-        bottomPadding: 0
-
-        title: i18nc("@title:window", "Add Languages")
-
-        ListView {
-            id: availableLanguagesList
-            implicitWidth: 18 * Kirigami.Units.gridUnit
-            model: languageListModel
-            delegate: addLanguageItemComponent
-        }
-
-        footer: RowLayout {
-            QQC2.Button {
-                id: addLanguagesButton
-
-                Layout.alignment: Qt.AlignHCenter
-                text: i18nc("@action:button", "Add")
-                enabled: false
-                onClicked: {
-                    languageListModel.selectedLanguageModel.addLanguages(addLanguagesSheet.selectedLanguages);
-                    addLanguagesSheet.sheetOpen = false;
-                }
+            onClicked: {
+                languageView.currentLang = model.languageCode;
+                languageListModel.currentIndex = index;
             }
         }
     }
-    footer: RowLayout {
+
+    footer: ColumnLayout {
         id: footerLayout
+        RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+            QQC2.Label {
+                text: languageListModel.numberExample
+            }
+            QQC2.Label {
+                text: languageListModel.currencyExample
+            }
+        }
 
-        QQC2.Button {
+        QQC2.Label {
+            Layout.alignment: Qt.AlignHCenter
+            text: languageListModel.metric
+        }
+
+        QQC2.Label {
+            Layout.alignment: Qt.AlignHCenter
+            text: languageListModel.timeExample
+        }
+
+        RowLayout {
             Layout.alignment: Qt.AlignRight
+            QQC2.Button {
+                text: i18nc("@action:button", "Advanced Settings")
 
-            enabled: availableLanguagesList.count
+                onClicked: kcm.push("AdvancedLanguageSelectPage.qml", {"languageListModel": languageListModel})
+            }
 
-            text: i18nc("@action:button", "Add languages…")
-
-            onClicked: addLanguagesSheet.sheetOpen = !addLanguagesSheet.sheetOpen
-
-            checkable: true
-            checked: addLanguagesSheet.sheetOpen
+            QQC2.Button {
+                text: i18nc("@action:button", "Apply")
+                enabled: !kcm.settings.lang.startsWith(languageView.currentLang);
+                onClicked: {
+                    kcm.settings.lang = languageView.currentLang;
+                    kcm.pop();
+                }
+            }
         }
     }
 }

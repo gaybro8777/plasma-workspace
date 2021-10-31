@@ -7,6 +7,7 @@
 #include "languagelistmodel.h"
 #include "formatssettings.h"
 #include "kcmformats.h"
+#include "exampleutility.cpp"
 
 #include <KLocalizedString>
 #include <QLocale>
@@ -33,6 +34,15 @@ QVariant LanguageListModel::data(const QModelIndex &index, int role) const
         return languageCodeToName(m_availableLanguages.at(row));
     case LanguageCode:
         return m_availableLanguages.at(row);
+    case Flag: {
+        QString flagCode;
+        const QStringList split = QLocale(m_availableLanguages.at(row)).name().split(QLatin1Char('_'));
+        if (split.size() > 1) {
+            flagCode = split[1].toLower();
+        }
+        auto flagIconPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kf5/locale/countries/%1/flag.png").arg(flagCode));
+        return flagIconPath;
+    }
     default:
         return QVariant();
     }
@@ -40,7 +50,7 @@ QVariant LanguageListModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> LanguageListModel::roleNames() const
 {
-    return {{NativeName, "nativeName"}, {LanguageCode, "languageCode"}};
+    return {{NativeName, "nativeName"}, {LanguageCode, "languageCode"}, {Flag, "flag"}};
 }
 
 QString LanguageListModel::languageCodeToName(const QString &languageCode)
@@ -69,14 +79,76 @@ QString LanguageListModel::languageCodeToName(const QString &languageCode)
     return languageName;
 }
 
-void SelectedLanguageModel::setFormatsSettings(QObject *settings)
+int LanguageListModel::currentIndex() const
+{
+    return m_index;
+}
+
+void LanguageListModel::setCurrentIndex(int index)
+{
+    if (index == m_index || index < 0 || index >= m_availableLanguages.size()) {
+        return;
+    }
+
+    m_index = index;
+    Q_EMIT exampleChanged();
+}
+
+QString LanguageListModel::exampleHelper(std::function<QString(const QLocale&)> func) const
+{
+    if (m_settings) {
+        if (m_index < 0) {
+            return func(QLocale(m_settings->lang()));
+        } else {
+            return func(QLocale(m_availableLanguages[m_index]));
+        }
+    } else {
+        return QString();
+    }
+}
+
+QString LanguageListModel::numberExample() const
+{
+    return exampleHelper(Utility::numericExample);
+}
+
+QString LanguageListModel::currencyExample() const
+{
+    return exampleHelper(Utility::monetaryExample);
+}
+
+QString LanguageListModel::timeExample() const
+{
+    return exampleHelper(Utility::shortTimeExample);
+}
+
+QString LanguageListModel::metric() const
+{
+    return exampleHelper(Utility::measurementExample);
+}
+
+void LanguageListModel::setFormatsSettings(QObject *settings)
 {
     if (FormatsSettings *formatsettings = dynamic_cast<FormatsSettings *>(settings)) {
         m_settings = formatsettings;
+        m_selectedLanguageModel->setFormatsSettings(formatsettings);
+        auto index = std::find_if(m_availableLanguages.begin(), m_availableLanguages.end(), [this](const QString &lang){
+            return m_settings->lang().startsWith(lang);
+        });
+        if (index != m_availableLanguages.end()) {
+            m_index = std::distance(m_availableLanguages.begin(), index);
+            Q_EMIT currentIndexChanged();
+        }
+        Q_EMIT exampleChanged();
+    }
+}
+
+void SelectedLanguageModel::setFormatsSettings(FormatsSettings *settings)
+{
+        m_settings = settings;
         beginResetModel();
         m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
         endResetModel();
-    }
 }
 
 SelectedLanguageModel *LanguageListModel::selectedLanguageModel() const

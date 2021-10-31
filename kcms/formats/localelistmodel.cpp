@@ -54,7 +54,7 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
     case FlagIcon: {
         QString flagCode;
         const QStringList split = name.split(QLatin1Char('_'));
-        if (split.count() > 1) {
+        if (split.size() > 1) {
             flagCode = split[1].toLower();
         }
         auto flagIconPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kf5/locale/countries/%1/flag.png").arg(flagCode));

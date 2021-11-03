@@ -1,5 +1,5 @@
 /*
-    optionsmodel.cpp
+    languagelistmodel.cpp
     SPDX-FileCopyrightText: 2021 Han Young <hanyoung@protonmail.com>
     SPDX-FileCopyrightText: 2019 Kevin Ottens <kevin.ottens@enioka.com>
     SPDX-License-Identifier: GPL-2.0-or-later
@@ -44,7 +44,7 @@ protected:
     static QString languageCodeToName(const QString &languageCode);
 
 private:
-    QString exampleHelper(std::function<QString(const QLocale&)> func) const;
+    QString exampleHelper(std::function<QString(const QLocale &)> func) const;
     FormatsSettings *m_settings{nullptr};
     QList<QString> m_availableLanguages;
     SelectedLanguageModel *m_selectedLanguageModel;

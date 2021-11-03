@@ -1,13 +1,13 @@
 /*
-    optionsmodel.cpp
+    languagelistmodel.h
     SPDX-FileCopyrightText: 2021 Han Young <hanyoung@protonmail.com>
     SPDX-FileCopyrightText: 2019 Kevin Ottens <kevin.ottens@enioka.com>
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 #include "languagelistmodel.h"
+#include "exampleutility.cpp"
 #include "formatssettings.h"
 #include "kcmformats.h"
-#include "exampleutility.cpp"
 
 #include <KLocalizedString>
 #include <QLocale>
@@ -94,7 +94,7 @@ void LanguageListModel::setCurrentIndex(int index)
     Q_EMIT exampleChanged();
 }
 
-QString LanguageListModel::exampleHelper(std::function<QString(const QLocale&)> func) const
+QString LanguageListModel::exampleHelper(std::function<QString(const QLocale &)> func) const
 {
     if (m_settings) {
         if (m_index < 0) {
@@ -132,7 +132,7 @@ void LanguageListModel::setFormatsSettings(QObject *settings)
     if (FormatsSettings *formatsettings = dynamic_cast<FormatsSettings *>(settings)) {
         m_settings = formatsettings;
         m_selectedLanguageModel->setFormatsSettings(formatsettings);
-        auto index = std::find_if(m_availableLanguages.begin(), m_availableLanguages.end(), [this](const QString &lang){
+        auto index = std::find_if(m_availableLanguages.begin(), m_availableLanguages.end(), [this](const QString &lang) {
             return m_settings->lang().startsWith(lang);
         });
         if (index != m_availableLanguages.end()) {
@@ -145,10 +145,10 @@ void LanguageListModel::setFormatsSettings(QObject *settings)
 
 void SelectedLanguageModel::setFormatsSettings(FormatsSettings *settings)
 {
-        m_settings = settings;
-        beginResetModel();
-        m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
-        endResetModel();
+    m_settings = settings;
+    beginResetModel();
+    m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
+    endResetModel();
 }
 
 SelectedLanguageModel *LanguageListModel::selectedLanguageModel() const

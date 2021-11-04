@@ -7,35 +7,47 @@
 #include "localegenhelper.h"
 #include "localegenhelperadaptor.h"
 
-#include <set>
 #include <QDBusConnection>
 #include <QDebug>
 #include <QFile>
 #include <QTimer>
+#include <set>
 
 LocaleGenHelper::LocaleGenHelper()
+    : m_timer(new QTimer(this))
 {
-    new LocalegenhelperAdaptor(this);
+    new LocaleGenHelperAdaptor(this);
     if (!QDBusConnection::systemBus().registerService(QStringLiteral("org.kde.localegenhelper"))) {
         qDebug() << "another helper is already running";
-        QCoreApplication::instance()->quit();
+        QCoreApplication::instance()->exit();
     }
-    if (!QDBusConnection::systemBus().registerObject(QStringLiteral("/"), this)) {
+    if (!QDBusConnection::systemBus().registerObject(QStringLiteral("/LocaleGenHelper"), this)) {
         qDebug() << "unable to register service interface to dbus";
-        QCoreApplication::instance()->quit();
+        QCoreApplication::instance()->exit();
     }
     m_authority = PolkitQt1::Authority::instance();
     connect(m_authority, &PolkitQt1::Authority::checkAuthorizationFinished, this, &LocaleGenHelper::enableLocalesPrivate);
+    connect(m_timer, &QTimer::timeout, this, [] {
+        QCoreApplication::instance()->exit();
+    });
+
 }
 
 void LocaleGenHelper::enableLocales(const QStringList &locales, qint64 pid)
 {
+    qDebug() << locales;
+    if (m_timer->isActive()) {
+        m_timer->stop();
+    }
     m_locales = locales;
-    m_authority->checkAuthorization(QStringLiteral("org.kde.foo.enablelocales"), PolkitQt1::UnixSessionSubject(pid), PolkitQt1::Authority::AllowUserInteraction);
+    m_authority->checkAuthorization(QStringLiteral("org.kde.localegenhelper.enableLocales"),
+                                    PolkitQt1::SystemBusNameSubject(message().service()),
+                                    PolkitQt1::Authority::AllowUserInteraction);
 }
 
 void LocaleGenHelper::enableLocalesPrivate(PolkitQt1::Authority::Result result)
 {
+    qDebug() << result;
     if (result != PolkitQt1::Authority::Result::Yes || !editLocaleGen()) {
         Q_EMIT success(false);
         exitAfterTimeOut();
@@ -80,6 +92,7 @@ bool LocaleGenHelper::editLocaleGen()
         QProcess *process = new QProcess(this);
         process->setProgram(QStringLiteral("locale-gen"));
         connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &LocaleGenHelper::handleLocaleGen);
+        process->start();
     } else {
         Q_EMIT success(true);
         exitAfterTimeOut();
@@ -101,8 +114,11 @@ void LocaleGenHelper::handleLocaleGen(int statusCode, QProcess::ExitStatus statu
 
 void LocaleGenHelper::exitAfterTimeOut()
 {
-    QTimer *timer = new QTimer(this);
-    timer->setInterval(30 * 1000);
-    connect(timer, &QTimer::timeout, this, []{QCoreApplication::instance()->exit();});
-    timer->start();
+    m_timer->start(30 * 1000);
+}
+
+int main(int argc, char *argv[]) {
+    QCoreApplication app(argc, argv);
+    new LocaleGenHelper();
+    return app.exec();
 }

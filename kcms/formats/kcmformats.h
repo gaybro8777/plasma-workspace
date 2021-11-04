@@ -27,7 +27,7 @@ public:
     OptionsModel *optionsModel() const;
     Q_INVOKABLE QQuickItem *getSubPage(int index) const; // proxy from KQuickAddons to Qml
     Q_INVOKABLE void unset(const QString &setting);
-
+    Q_INVOKABLE void generateLocale();
 private:
     QHash<QString, QString> m_cachedFlags;
 

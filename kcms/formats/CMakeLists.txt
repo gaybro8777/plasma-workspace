@@ -17,8 +17,10 @@ target_link_libraries(plasma-localegen-helper
     Qt::DBus
     PolkitQt5-1::Core
 )
+ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${KDE_INSTALL_DBUSSERVICEDIR} @ONLY)
 install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
-
+install(FILES org.kde.localegenhelper.conf DESTINATION "/usr/share/dbus-1/system.d")
+install(FILES org.kde.localegenhelper.policy DESTINATION "/usr/share/polkit-1/actions")
 set(kcm_formats_PART_SRCS
     kcmformats.cpp
     localelistmodel.cpp
@@ -29,6 +31,9 @@ set(kcm_formats_PART_SRCS
     localegenerator.cpp
 )
 kconfig_add_kcfg_files(kcm_formats_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
+
+set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)
+qt5_add_dbus_interface(kcm_formats_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
 
 ecm_qt_declare_logging_category(
     kcm_formats_PART_SRCS

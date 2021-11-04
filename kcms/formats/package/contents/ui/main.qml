@@ -29,6 +29,7 @@ KCM.ScrollViewKCM {
             subtitle: model.example
             reserveSpaceForSubtitle: true
             onClicked: {
+                kcm.generateLocale();
                 if (model.page === "lang") {
                     languageSelectPage.active = true;
                     kcm.push(languageSelectPage.item);

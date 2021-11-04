@@ -18,6 +18,7 @@
 #include "languagelistmodel.h"
 #include "localelistmodel.h"
 #include "optionsmodel.h"
+#include "localegenerator.h"
 
 K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_formats.json")
 
@@ -79,5 +80,10 @@ void KCMFormats::unset(const QString &setting)
         settings()->setMonetary(settings()->defaultMonetaryValue());
     }
     settings()->config()->group(QStringLiteral("Formats")).deleteEntry(entry);
+}
+void KCMFormats::generateLocale()
+{
+    auto helper = new LocaleGenerator(this);
+    helper->localesGenerate({"en_US", "zh_CN"});
 }
 #include "kcmformats.moc"

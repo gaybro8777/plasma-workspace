@@ -8,6 +8,7 @@
 #pragma once
 #include <QObject>
 #include <QProcess>
+#include "localegenhelperinterface.h"
 class LocaleGenerator : public QObject
 {
     Q_OBJECT
@@ -24,9 +25,9 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void ubuntuLangCheck(int statusCode, QProcess::ExitStatus status);
+
 private:
     QProcess *m_proc;
-
+    org::kde::localegenhelper::LocaleGenHelper *m_interface;
     QStringList m_packageIDs;
 };
-

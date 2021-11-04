@@ -6,15 +6,15 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 #include "localegenerator.h"
-#include "debug.h"
 #include "config-workspace.h"
+#include "debug.h"
 #include <QFile>
 
 #include <PackageKit/Daemon>
 LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
+    , m_interface(new org::kde::localegenhelper::LocaleGenHelper(QStringLiteral("org.kde.localgenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this))
 {
-
 }
 
 void LocaleGenerator::localesGenerate(const QStringList &list)
@@ -23,14 +23,17 @@ void LocaleGenerator::localesGenerate(const QStringList &list)
         // probably musl distro
         Q_EMIT allManual();
         return;
+    } else {
+        m_interface->enableLocales(list, 10000);
     }
-
 }
 
 void LocaleGenerator::ubuntuInstall(const QString &lang)
 {
     // Ubuntu
-    auto m_proc = new QProcess(this);
+    if (!m_proc) {
+        m_proc = new QProcess(this);
+    }
     m_proc->setProgram("/usr/bin/check-language-support");
     m_proc->setArguments({"--language", lang.left(lang.indexOf(QLatin1Char('@')))});
     connect(m_proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &LocaleGenerator::ubuntuLangCheck);
@@ -48,14 +51,11 @@ void LocaleGenerator::ubuntuLangCheck(int status, QProcess::ExitStatus exit)
     const QStringList packages = output.split(QLatin1Char(' '));
 
     auto transaction = PackageKit::Daemon::resolve(packages, PackageKit::Transaction::FilterNotInstalled | PackageKit::Transaction::FilterArch);
-    connect(transaction,
-            &PackageKit::Transaction::package,
-            this,
-            [this](PackageKit::Transaction::Info info, const QString &packageID, const QString &summary) {
-                Q_UNUSED(info);
-                Q_UNUSED(summary);
-                m_packageIDs << packageID;
-            });
+    connect(transaction, &PackageKit::Transaction::package, this, [this](PackageKit::Transaction::Info info, const QString &packageID, const QString &summary) {
+        Q_UNUSED(info);
+        Q_UNUSED(summary);
+        m_packageIDs << packageID;
+    });
     connect(transaction, &PackageKit::Transaction::errorCode, this, [](PackageKit::Transaction::Error error, const QString &details) {
         qCDebug(KCM_FORMATS) << "resolve error" << error << details;
     });

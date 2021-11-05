@@ -9,25 +9,53 @@
 #include "config-workspace.h"
 #include "debug.h"
 #include <QFile>
-
+#ifdef OS_UBUNTU
 #include <PackageKit/Daemon>
+#endif
 LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
-    , m_interface(new org::kde::localegenhelper::LocaleGenHelper(QStringLiteral("org.kde.localgenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this))
+    , m_interface(new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"),
+                                                                 QStringLiteral("/LocaleGenHelper"),
+                                                                 QDBusConnection::systemBus(),
+                                                                 this))
 {
+    qDebug() << "connect: " << m_interface->isValid();
+    connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
+        if (success) {
+#ifdef OS_UBUNTU
+            Q_EMIT this->success();
+#elif GLIBC_LOCALE
+            Q_EMIT this->needsFont();
+#endif
+        } else {
+            Q_EMIT this->allManual();
+        }
+    });
 }
-
+QString LocaleGenerator::supportMode() const
+{
+#ifdef OS_UBUNTU
+    return QStringLiteral("all");
+#elif GLIBC_LOCALE
+    return QStringLiteral("glibc");
+#else
+    return QStringLiteral("none");
+#endif
+}
 void LocaleGenerator::localesGenerate(const QStringList &list)
 {
+    qDebug() << "enable locales: " << list;
     if (!QFile(QStringLiteral("/etc/locale.gen")).exists()) {
         // probably musl distro
         Q_EMIT allManual();
         return;
     } else {
-        m_interface->enableLocales(list, 10000);
+        qDebug() << "send polkit request";
+        m_interface->enableLocales(list);
     }
 }
 
+#ifdef OS_UBUNTU
 void LocaleGenerator::ubuntuInstall(const QString &lang)
 {
     // Ubuntu
@@ -74,3 +102,4 @@ void LocaleGenerator::ubuntuLangCheck(int status, QProcess::ExitStatus exit)
         });
     });
 }
+#endif

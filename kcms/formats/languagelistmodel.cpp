@@ -146,8 +146,13 @@ void LanguageListModel::setFormatsSettings(QObject *settings)
 void SelectedLanguageModel::setFormatsSettings(FormatsSettings *settings)
 {
     m_settings = settings;
+
     beginResetModel();
-    m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
+    if (m_settings->language() == m_settings->defaultLanguageValue() && m_settings->lang() != m_settings->defaultLangValue()) {
+        m_selectedLanguages = {m_settings->lang()};
+    } else {
+        m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
+    }
     endResetModel();
 }
 

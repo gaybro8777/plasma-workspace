@@ -51,6 +51,7 @@ ecm_qt_install_logging_categories(
 kcoreaddons_add_plugin(kcm_formats SOURCES ${kcm_formats_PART_SRCS} INSTALL_NAMESPACE "kcms")
 kcoreaddons_desktop_to_json(kcm_formats "kcm_formats.desktop")
 target_link_libraries(kcm_formats
+    Qt::DBus
     KF5::I18n
     KF5::KCMUtils
     KF5::QuickAddons)

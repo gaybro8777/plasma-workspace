@@ -42,8 +42,40 @@ KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVari
     qmlRegisterAnonymousType<SelectedLanguageModel>("kcmformats_selectedLanguageModel", 1);
     qmlRegisterType<LocaleListModel>("LocaleListModel", 1, 0, "LocaleListModel");
     qmlRegisterType<LanguageListModel>("LanguageListModel", 1, 0, "LanguageListModel");
+    qmlRegisterType<LocaleGenerator>("LocaleGenerator", 1, 0, "LocaleGenerator");
     m_settings = new FormatsSettings(this);
     m_optionsModel = new OptionsModel(this);
+}
+
+void KCMFormats::save()
+{
+    // shouldn't have data race issue
+    if (!m_generator) {
+        m_generator = new LocaleGenerator(this);
+    }
+
+    // assemble full locales in use
+    QStringList locales;
+    if (settings()->lang() != settings()->defaultLangValue()) {
+        locales.append(settings()->lang());
+    }
+    if (settings()->numeric() != settings()->defaultNumericValue()) {
+        locales.append(settings()->numeric());
+    }
+    if (settings()->time() != settings()->defaultTimeValue()) {
+        locales.append(settings()->time());
+    }
+    if (settings()->measurement() != settings()->defaultMeasurementValue()) {
+        locales.append(settings()->measurement());
+    }
+    if (settings()->monetary() != settings()->defaultMonetaryValue()) {
+        locales.append(settings()->monetary());
+    }
+    if (settings()->language() != settings()->defaultLanguageValue()) {
+        locales.append(settings()->language().split(QLatin1Char(':')));
+    }
+    m_generator->localesGenerate(locales);
+    ManagedConfigModule::save();
 }
 
 FormatsSettings *KCMFormats::settings() const
@@ -80,10 +112,5 @@ void KCMFormats::unset(const QString &setting)
         settings()->setMonetary(settings()->defaultMonetaryValue());
     }
     settings()->config()->group(QStringLiteral("Formats")).deleteEntry(entry);
-}
-void KCMFormats::generateLocale()
-{
-    auto helper = new LocaleGenerator(this);
-    helper->localesGenerate({"en_US", "zh_CN"});
 }
 #include "kcmformats.moc"

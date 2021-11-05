@@ -30,10 +30,10 @@ LocaleGenHelper::LocaleGenHelper()
     connect(m_timer, &QTimer::timeout, this, [] {
         QCoreApplication::instance()->exit();
     });
-
+    m_timer->start(30 * 1000);
 }
 
-void LocaleGenHelper::enableLocales(const QStringList &locales, qint64 pid)
+void LocaleGenHelper::enableLocales(const QStringList &locales)
 {
     qDebug() << locales;
     if (m_timer->isActive()) {
@@ -117,7 +117,8 @@ void LocaleGenHelper::exitAfterTimeOut()
     m_timer->start(30 * 1000);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QCoreApplication app(argc, argv);
     new LocaleGenHelper();
     return app.exec();

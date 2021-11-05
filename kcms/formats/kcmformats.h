@@ -13,6 +13,7 @@
 
 class FormatsSettings;
 class OptionsModel;
+class LocaleGenerator;
 class KCMFormats : public KQuickAddons::ManagedConfigModule
 {
     Q_OBJECT
@@ -22,15 +23,19 @@ class KCMFormats : public KQuickAddons::ManagedConfigModule
 public:
     explicit KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &list = QVariantList());
     virtual ~KCMFormats() override = default;
+    void save() override;
+
     FormatsSettings *settings() const;
 
     OptionsModel *optionsModel() const;
     Q_INVOKABLE QQuickItem *getSubPage(int index) const; // proxy from KQuickAddons to Qml
     Q_INVOKABLE void unset(const QString &setting);
-    Q_INVOKABLE void generateLocale();
+
 private:
+
     QHash<QString, QString> m_cachedFlags;
 
     OptionsModel *m_optionsModel;
     FormatsSettings *m_settings;
+    LocaleGenerator *m_generator {nullptr};
 };

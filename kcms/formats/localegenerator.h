@@ -6,28 +6,33 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 #pragma once
+#include "localegenhelperinterface.h"
 #include <QObject>
 #include <QProcess>
-#include "localegenhelperinterface.h"
+using LocaleGenHelper = org::kde::localegenhelper::LocaleGenHelper;
 class LocaleGenerator : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString supportMode READ supportMode CONSTANT)
 public:
-    LocaleGenerator(QObject *parent);
-    void localesGenerate(const QStringList &list);
+    LocaleGenerator(QObject *parent = nullptr);
 
+    QString supportMode() const;
+
+    Q_INVOKABLE void localesGenerate(const QStringList &list);
+#ifdef OS_UBUNTU
     void ubuntuInstall(const QString &lang);
-
+#endif
 Q_SIGNALS:
     void success();
     void needsFont();
     void allManual();
-
+#ifdef OS_UBUNTU
 private Q_SLOTS:
     void ubuntuLangCheck(int statusCode, QProcess::ExitStatus status);
-
+#endif
 private:
     QProcess *m_proc;
-    org::kde::localegenhelper::LocaleGenHelper *m_interface;
+    LocaleGenHelper *m_interface;
     QStringList m_packageIDs;
 };

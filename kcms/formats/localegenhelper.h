@@ -10,6 +10,8 @@
 #include <QDBusContext>
 #include <QObject>
 #include <QProcess>
+#include <QRegularExpression>
+
 class QTimer;
 class LocaleGenHelper : public QObject, protected QDBusContext
 {
@@ -28,7 +30,9 @@ private:
     bool editLocaleGen();
     void exitAfterTimeOut();
     bool checkShouldGenerate();
+    bool validateLocales();
     PolkitQt1::Authority *m_authority;
     QStringList m_locales;
     QTimer *m_timer;
+    QRegularExpression m_regex{QStringLiteral("^[a-z]{2}(_[A-Z]{2}(@[a-z]+)?)?$")};
 };

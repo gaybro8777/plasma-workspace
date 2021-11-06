@@ -17,9 +17,34 @@ KCM.ScrollViewKCM {
     id: root
     implicitHeight: Kirigami.Units.gridUnit * 40
     implicitWidth: Kirigami.Units.gridUnit * 20
-    header: Kirigami.InlineMessage {
-        id: helpMsg
+    Kirigami.InlineMessage {
+        id: takeEffectNextTimeMsg
         text: i18n("Your changes will take effect the next time you log in.")
+    }
+    Kirigami.InlineMessage {
+        id: installFontMsg
+        text: i18n("System locales have been generated, but you may want to install fonts for the language")
+    }
+    Kirigami.InlineMessage {
+        id: allManualMsg
+        text: i18n("You may want to generate system locales and install the fonts")
+    }
+
+    Connections {
+        target: kcm
+        function onStartGenerateLocale() {
+            header = takeEffectNextTimeMsg;
+            takeEffectNextTimeMsg.visible = true;
+        }
+        function onRequireInstallFont() {
+            installFontMsg.visible = true;
+        }
+        function onAllManual() {
+            allManualMsg.visible = true;
+        }
+        function onGenerateFinished() {
+            console.log("all set");
+        }
     }
 
     view: ListView {
@@ -135,7 +160,6 @@ KCM.ScrollViewKCM {
                         }
 
                         kcm.currentIndex = 0;
-                        helpMsg.visible = true;
                     }
                 }
             }

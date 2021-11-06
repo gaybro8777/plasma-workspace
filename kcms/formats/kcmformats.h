@@ -30,12 +30,17 @@ public:
     OptionsModel *optionsModel() const;
     Q_INVOKABLE QQuickItem *getSubPage(int index) const; // proxy from KQuickAddons to Qml
     Q_INVOKABLE void unset(const QString &setting);
+Q_SIGNALS:
+    void takeEffectNextTime();
+    void startGenerateLocale();
+    void generateFinished();
+    void requireInstallFont();
+    void allManual();
 
 private:
-
     QHash<QString, QString> m_cachedFlags;
 
     OptionsModel *m_optionsModel;
     FormatsSettings *m_settings;
-    LocaleGenerator *m_generator {nullptr};
+    LocaleGenerator *m_generator{nullptr};
 };

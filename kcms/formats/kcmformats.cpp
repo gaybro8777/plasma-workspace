@@ -52,6 +52,9 @@ void KCMFormats::save()
     // shouldn't have data race issue
     if (!m_generator) {
         m_generator = new LocaleGenerator(this);
+        connect(m_generator, &LocaleGenerator::allManual, this, &KCMFormats::allManual);
+        connect(m_generator, &LocaleGenerator::success, this, &KCMFormats::generateFinished);
+        connect(m_generator, &LocaleGenerator::needsFont, this, &KCMFormats::requireInstallFont);
     }
 
     // assemble full locales in use
@@ -74,8 +77,13 @@ void KCMFormats::save()
     if (settings()->language() != settings()->defaultLanguageValue()) {
         locales.append(settings()->language().split(QLatin1Char(':')));
     }
-    m_generator->localesGenerate(locales);
+
+    if (!locales.isEmpty()) {
+        m_generator->localesGenerate(locales);
+        Q_EMIT startGenerateLocale();
+    }
     ManagedConfigModule::save();
+    Q_EMIT takeEffectNextTime();
 }
 
 FormatsSettings *KCMFormats::settings() const

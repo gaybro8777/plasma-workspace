@@ -17,7 +17,7 @@ target_link_libraries(plasma-localegen-helper
     Qt::DBus
     PolkitQt5-1::Core
 )
-ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${KDE_INSTALL_DBUSSERVICEDIR} @ONLY)
+ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${DBUS_SYSTEM_SERVICES_INSTALL_DIR} @ONLY)
 install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES org.kde.localegenhelper.conf DESTINATION "/usr/share/dbus-1/system.d")
 install(FILES org.kde.localegenhelper.policy DESTINATION "/usr/share/polkit-1/actions")

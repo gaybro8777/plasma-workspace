@@ -14,10 +14,7 @@
 #endif
 LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
-    , m_interface(new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"),
-                                                                 QStringLiteral("/LocaleGenHelper"),
-                                                                 QDBusConnection::systemBus(),
-                                                                 this))
+    , m_interface(new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this))
 {
     qDebug() << "connect: " << m_interface->isValid();
     connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
@@ -46,8 +43,13 @@ void LocaleGenerator::localesGenerate(const QStringList &list)
 {
     qDebug() << "enable locales: " << list;
     if (!QFile(QStringLiteral("/etc/locale.gen")).exists()) {
+#ifdef GLIBC_LOCALE
+        // fedora or centos
+        Q_EMIT success();
+#else
         // probably musl distro
         Q_EMIT allManual();
+#endif
         return;
     } else {
         qDebug() << "send polkit request";

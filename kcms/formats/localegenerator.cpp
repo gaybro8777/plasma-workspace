@@ -6,7 +6,6 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 #include "localegenerator.h"
-#include "config-workspace.h"
 #include "debug.h"
 #include <QFile>
 #ifdef OS_UBUNTU
@@ -14,20 +13,7 @@
 #endif
 LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
-    , m_interface(new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this))
 {
-    qDebug() << "connect: " << m_interface->isValid();
-    connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
-        if (success) {
-#ifdef OS_UBUNTU
-            Q_EMIT this->success();
-#elif GLIBC_LOCALE
-            Q_EMIT this->needsFont();
-#endif
-        } else {
-            Q_EMIT this->allManual();
-        }
-    });
 }
 QString LocaleGenerator::supportMode() const
 {
@@ -39,9 +25,24 @@ QString LocaleGenerator::supportMode() const
     return QStringLiteral("none");
 #endif
 }
+
+/* localesGenerate
+ * Why so many macros?
+ * We have three cases
+ * Ubuntu, can install fonts, translation and generate glibc locale using check-language-support
+ * Glibc distro that require glibc locale generating, but we have no way of finding out what fonts need install
+ * Such as Debian, Arch...
+ *
+ * Glibc distro that already generated all the glibc locales
+ * Fedora, CentOS... We don't have to do anything, but to remind user that they should install fonts
+ *
+ * Musl distro that don't even use Glibc locales
+ * Nothing we can do, tell them to use musl-locales
+ *
+ * */
 void LocaleGenerator::localesGenerate(const QStringList &list)
 {
-    qDebug() << "enable locales: " << list;
+    qCDebug(KCM_FORMATS) << "enable locales: " << list;
     if (!QFile(QStringLiteral("/etc/locale.gen")).exists()) {
 #ifdef GLIBC_LOCALE
         // fedora or centos
@@ -51,10 +52,28 @@ void LocaleGenerator::localesGenerate(const QStringList &list)
         Q_EMIT allManual();
 #endif
         return;
-    } else {
+    }
+#ifdef GLIBC_LOCALE
+    else {
         qDebug() << "send polkit request";
+        if (!m_interface) {
+            m_interface = new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
+            qCDebug(KCM_FORMATS) << "connect: " << m_interface->isValid();
+            connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
+                if (success) {
+#ifdef OS_UBUNTU
+                    Q_EMIT this->success();
+#else
+                    Q_EMIT this->needsFont();
+#endif
+                } else {
+                    Q_EMIT this->allManual();
+                }
+            });
+        }
         m_interface->enableLocales(list);
     }
+#endif
 }
 
 #ifdef OS_UBUNTU

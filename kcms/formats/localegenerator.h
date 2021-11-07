@@ -6,10 +6,13 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 #pragma once
-#include "localegenhelperinterface.h"
 #include <QObject>
 #include <QProcess>
+#include "config-workspace.h"
+#ifdef GLIBC_LOCALE
+#include "localegenhelperinterface.h"
 using LocaleGenHelper = org::kde::localegenhelper::LocaleGenHelper;
+#endif
 class LocaleGenerator : public QObject
 {
     Q_OBJECT
@@ -33,6 +36,8 @@ private Q_SLOTS:
 #endif
 private:
     QProcess *m_proc;
-    LocaleGenHelper *m_interface;
     QStringList m_packageIDs;
+#ifdef GLIBC_LOCALE
+    LocaleGenHelper *m_interface;
+#endif
 };

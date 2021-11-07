@@ -1,6 +1,7 @@
 # KI18N Translation Domain for this library
 add_definitions(-DTRANSLATION_DOMAIN=\"kcmformats\")
 
+if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
 find_package(PolkitQt5-1)
 set(localegen_Helper_SRCS
     localegenhelper.cpp
@@ -21,6 +22,8 @@ ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATIO
 install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES org.kde.localegenhelper.conf DESTINATION "/usr/share/dbus-1/system.d")
 install(FILES org.kde.localegenhelper.policy DESTINATION "/usr/share/polkit-1/actions")
+endif()
+
 set(kcm_formats_PART_SRCS
     kcmformats.cpp
     localelistmodel.cpp
@@ -32,8 +35,10 @@ set(kcm_formats_PART_SRCS
 )
 kconfig_add_kcfg_files(kcm_formats_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
 
+if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
 set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)
 qt5_add_dbus_interface(kcm_formats_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
+endif()
 
 ecm_qt_declare_logging_category(
     kcm_formats_PART_SRCS
@@ -51,12 +56,14 @@ ecm_qt_install_logging_categories(
 kcoreaddons_add_plugin(kcm_formats SOURCES ${kcm_formats_PART_SRCS} INSTALL_NAMESPACE "kcms")
 kcoreaddons_desktop_to_json(kcm_formats "kcm_formats.desktop")
 target_link_libraries(kcm_formats
-    Qt::DBus
     KF5::I18n
     KF5::KCMUtils
     KF5::QuickAddons)
 if(UBUNTU_PACKAGEKIT)
     target_link_libraries(kcm_formats PK::packagekitqt5)
+endif()
+if(UBUNTU_PACKGEKIT OR GLIBC_LOCALE_GEN)
+    target_link_libraries(kcm_formats Qt::DBus)
 endif()
 
 ########### install files ###############

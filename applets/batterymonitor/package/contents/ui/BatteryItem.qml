@@ -28,8 +28,10 @@ Item {
 
     readonly property bool isBroken: model.Capacity > 0 && model.Capacity < 50
 
-    property Component batteryDetails: Flow { // GridLayout crashes with a Repeater in it somehow
+    component BatteryDetails : Flow { // GridLayout crashes with a Repeater in it somehow
         id: detailsLayout
+
+        required property bool inListView
 
         property int leftColumnWidth: 0
         width: PlasmaCore.Units.gridUnit * 11
@@ -39,7 +41,7 @@ Item {
             width: parent ? parent.width : implicitWidth
             wrapMode: Text.WordWrap
             text: batteryItem.isBroken && typeof model.Capacity !== "undefined" ? i18n("This battery's health is at only %1% and should be replaced. Please contact your hardware vendor for more details.", model.Capacity) : ""
-            font: !!detailsLayout.parent.inListView ? PlasmaCore.Theme.smallestFont : PlasmaCore.Theme.defaultFont
+            font: detailsLayout.inListView ? PlasmaCore.Theme.smallestFont : PlasmaCore.Theme.defaultFont
             visible: batteryItem.isBroken
         }
 
@@ -62,7 +64,7 @@ Item {
 
                 states: [
                     State {
-                        when: !!detailsLayout.parent.inListView // HACK
+                        when: detailsLayout.inListView // HACK
                         PropertyChanges {
                             target: detailsLabel
                             horizontalAlignment: modelData.value ? Text.AlignRight : Text.AlignLeft
@@ -118,7 +120,9 @@ Item {
                         text: batteryNameLabel.text
                     }
                     Loader {
-                        sourceComponent: batteryItem.batteryDetails
+                        sourceComponent: BatteryDetails {
+                            inListView: false
+                        }
                         opacity: 0.5
                     }
                 }
@@ -183,7 +187,6 @@ Item {
 
         Loader {
             id: detailsLoader
-            property bool inListView: true
             anchors {
                 left: parent.left
                 leftMargin: batteryIcon.width + PlasmaCore.Units.gridUnit
@@ -191,7 +194,9 @@ Item {
             }
             visible: !!item
             opacity: 0.5
-            sourceComponent: batteryDetails
+            sourceComponent: BatteryDetails {
+                inListView: true
+            }
         }
 
         InhibitionHint {

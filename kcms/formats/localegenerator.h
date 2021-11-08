@@ -6,9 +6,9 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 #pragma once
+#include "config-workspace.h"
 #include <QObject>
 #include <QProcess>
-#include "config-workspace.h"
 #ifdef GLIBC_LOCALE
 #include "localegenhelperinterface.h"
 using LocaleGenHelper = org::kde::localegenhelper::LocaleGenHelper;
@@ -24,7 +24,7 @@ public:
 
     Q_INVOKABLE void localesGenerate(const QStringList &list);
 #ifdef OS_UBUNTU
-    void ubuntuInstall(const QString &lang);
+    void ubuntuInstall(const QStringList &locales);
 #endif
 Q_SIGNALS:
     void success();
@@ -35,9 +35,9 @@ private Q_SLOTS:
     void ubuntuLangCheck(int statusCode, QProcess::ExitStatus status);
 #endif
 private:
-    QProcess *m_proc;
+    QProcess *m_proc{nullptr};
     QStringList m_packageIDs;
 #ifdef GLIBC_LOCALE
-    LocaleGenHelper *m_interface;
+    LocaleGenHelper *m_interface {nullptr};
 #endif
 };

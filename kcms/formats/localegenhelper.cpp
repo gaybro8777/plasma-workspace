@@ -45,6 +45,7 @@ void LocaleGenHelper::enableLocales(const QStringList &locales)
         exitAfterTimeOut();
         return;
     }
+    qDebug() << "check auth";
     m_authority->checkAuthorization(QStringLiteral("org.kde.localegenhelper.enableLocales"),
                                     PolkitQt1::SystemBusNameSubject(message().service()),
                                     PolkitQt1::Authority::AllowUserInteraction);
@@ -131,7 +132,8 @@ void LocaleGenHelper::exitAfterTimeOut()
 bool LocaleGenHelper::validateLocales()
 {
     m_locales.removeDuplicates();
-    for (const auto &locale : std::as_const(m_locales)) {
+    for (auto &locale : m_locales) {
+        locale.remove(QStringLiteral(".UTF-8"));
         auto result = m_regex.match(locale);
         if (!result.hasMatch()) {
             return false;

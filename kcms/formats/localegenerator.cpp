@@ -14,6 +14,22 @@
 LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
 {
+#ifdef GLIBC_LOCALE
+    m_interface =
+            new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
+    qCDebug(KCM_FORMATS) << "connect: " << m_interface->isValid();
+    connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
+        if (success) {
+#ifdef OS_UBUNTU
+            Q_EMIT this->success();
+#else
+            Q_EMIT this->needsFont();
+#endif
+        } else {
+            Q_EMIT this->allManual();
+        }
+    });
+#endif
 }
 QString LocaleGenerator::supportMode() const
 {
@@ -43,6 +59,10 @@ QString LocaleGenerator::supportMode() const
 void LocaleGenerator::localesGenerate(const QStringList &list)
 {
     qCDebug(KCM_FORMATS) << "enable locales: " << list;
+#ifdef OS_UBUNTU
+    ubuntuInstall(list);
+    return;
+#endif
     if (!QFile(QStringLiteral("/etc/locale.gen")).exists()) {
 #ifdef GLIBC_LOCALE
         // fedora or centos
@@ -56,35 +76,23 @@ void LocaleGenerator::localesGenerate(const QStringList &list)
 #ifdef GLIBC_LOCALE
     else {
         qDebug() << "send polkit request";
-        if (!m_interface) {
-            m_interface = new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
-            qCDebug(KCM_FORMATS) << "connect: " << m_interface->isValid();
-            connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
-                if (success) {
-#ifdef OS_UBUNTU
-                    Q_EMIT this->success();
-#else
-                    Q_EMIT this->needsFont();
-#endif
-                } else {
-                    Q_EMIT this->allManual();
-                }
-            });
-        }
         m_interface->enableLocales(list);
     }
 #endif
 }
 
 #ifdef OS_UBUNTU
-void LocaleGenerator::ubuntuInstall(const QString &lang)
+void LocaleGenerator::ubuntuInstall(const QStringList &locales)
 {
     // Ubuntu
     if (!m_proc) {
         m_proc = new QProcess(this);
     }
+    QStringList args;
+    args.reserve(locales.size() * 2);
+    std::transform(locales.begin(), locales.end(), std::back_inserter(args), [](const QString &locale){return QStringList({QStringLiteral("-l"), locale});});
     m_proc->setProgram("/usr/bin/check-language-support");
-    m_proc->setArguments({"--language", lang.left(lang.indexOf(QLatin1Char('@')))});
+    m_proc->setArguments(args);
     connect(m_proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &LocaleGenerator::ubuntuLangCheck);
     m_proc->start();
 }

@@ -18,41 +18,7 @@ LanguageListModel::LanguageListModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_selectedLanguageModel(new SelectedLanguageModel(this))
 {
-    static std::unordered_map<QString, QString> KDELocaleToGlibcLocale = {
-        {QStringLiteral("sv"), QStringLiteral("sv_SE.UTF-8")},           {QStringLiteral("sk"), QStringLiteral("sk_SK.UTF-8")},
-        {QStringLiteral("hu"), QStringLiteral("hu_HU.UTF-8")},           {QStringLiteral("sr@ijekavianlatin"), QStringLiteral("sr_RS@latin.UTF-8")},
-        {QStringLiteral("sr@ijekavian"), QStringLiteral("sr_ME.UTF-8")}, {QStringLiteral("az"), QStringLiteral("az_AZ.UTF-8")},
-        {QStringLiteral("ml"), QStringLiteral("ml_IN.UTF-8")},           {QStringLiteral("pt"), QStringLiteral("pt_PT.UTF-8")},
-        {QStringLiteral("ar"), QStringLiteral("ar_AE.UTF-8")},           {QStringLiteral("es"), QStringLiteral("es_ES.UTF-8")},
-        {QStringLiteral("da"), QStringLiteral("da_DK.UTF-8")},           {QStringLiteral("pa"), QStringLiteral("pa_IN.UTF-8")},
-        {QStringLiteral("bs"), QStringLiteral("bs_BA.UTF-8")},           {QStringLiteral("et"), QStringLiteral("et.EE.UTF-8")},
-        {QStringLiteral("lt"), QStringLiteral("lt_LT.UTF-8")},           {QStringLiteral("sr@latin"), QStringLiteral("sr_RS@latin.UTF-8")},
-        {QStringLiteral("cs"), QStringLiteral("cs_CZ.UTF-8")},           {QStringLiteral("ro"), QStringLiteral("ro_RO.UTF-8")},
-        {QStringLiteral("fi"), QStringLiteral("fi_FI.UTF-8")},           {QStringLiteral("eu"), QStringLiteral("eu_ES.UTF-8")},
-        {QStringLiteral("tr"), QStringLiteral("tr_TR.UTF-8")},           {QStringLiteral("en_US"), QStringLiteral("en_US.UTF-8")},
-        {QStringLiteral("pl"), QStringLiteral("pl_PL.UTF-8")},           {QStringLiteral("uk"), QStringLiteral("uk_UA.UTF-8")},
-        {QStringLiteral("ja"), QStringLiteral("ja_JP.UTF-8")},           {QStringLiteral("sl"), QStringLiteral("sl_SI.UTF-8")},
-        {QStringLiteral("nds"), QStringLiteral("nds_DE.UTF-8")},         {QStringLiteral("ca@valencia"), QStringLiteral("ca_ES@valencia.UTF-8")},
-        {QStringLiteral("pt_BR"), QStringLiteral("pt_BR.UTF-8")},        {QStringLiteral("vi"), QStringLiteral("vi_VN.UTF-8")},
-        {QStringLiteral("hi"), QStringLiteral("hi_IN.UTF-8")},           {QStringLiteral("nl"), QStringLiteral("nl_NL.UTF-8")},
-        {QStringLiteral("ru"), QStringLiteral("ru_RU.UTF-8")},           {QStringLiteral("ca"), QStringLiteral("ca_ES.UTF-8")},
-        {QStringLiteral("fr"), QStringLiteral("fr_FR.UTF-8")},           {QStringLiteral("nn"), QStringLiteral("nn_NO.UTF-8")},
-        {QStringLiteral("nb"), QStringLiteral("nb_NO.UTF-8")},           {QStringLiteral("he"), QStringLiteral("he_IL.UTF-8")},
-        {QStringLiteral("ia"), QStringLiteral("ia_FR.UTF-8")},           {QStringLiteral("ta"), QStringLiteral("ta_IN.UTF-8")},
-        {QStringLiteral("en_GB"), QStringLiteral("en_GB.UTF-8")},        {QStringLiteral("ko"), QStringLiteral("ko_KR.UTF-8")},
-        {QStringLiteral("de"), QStringLiteral("de_DE.UTF-8")},           {QStringLiteral("it"), QStringLiteral("it_IT.UTF-8")},
-        {QStringLiteral("gl"), QStringLiteral("gl_ES.UTF-8")},           {QStringLiteral("zh_TW"), QStringLiteral("zh_TW.UTF-8")},
-        {QStringLiteral("id"), QStringLiteral("id_ID.UTF-8")},           {QStringLiteral("lv"), QStringLiteral("lv_LV.UTF-8")},
-        {QStringLiteral("sr"), QStringLiteral("sr_RS.UTF-8")},           {QStringLiteral("tg"), QStringLiteral("tg_TJ.UTF-8")},
-        {QStringLiteral("el"), QStringLiteral("el_GR.UTF-8")},           {QStringLiteral("zh_CN"), QStringLiteral("zh_CN.UTF-8")}};
     auto langs = KLocalizedString::availableDomainTranslations("plasmashell").values();
-    std::for_each(langs.begin(), langs.end(), [](QString &KDECode) {
-        if (KDELocaleToGlibcLocale.count(KDECode)) {
-            KDECode = KDELocaleToGlibcLocale[KDECode];
-        } else {
-            qCWarning(KCM_FORMATS) << "Can't convert KDE language code " << KDECode << " to glibc locale code";
-        }
-    });
     langs.sort();
     m_availableLanguages = std::move(langs);
 }

@@ -74,9 +74,6 @@ void KCMFormats::save()
     if (settings()->monetary() != settings()->defaultMonetaryValue()) {
         locales.append(settings()->monetary());
     }
-    if (settings()->language() != settings()->defaultLanguageValue()) {
-        locales.append(settings()->language().split(QLatin1Char(':')));
-    }
 
     if (!locales.isEmpty()) {
         m_generator->localesGenerate(locales);

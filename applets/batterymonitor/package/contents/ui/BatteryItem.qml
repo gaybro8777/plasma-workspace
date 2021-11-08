@@ -91,10 +91,6 @@ Item {
 
                 property int _s: PlasmaCore.Units.largeSpacing / 2
 
-                Layout.minimumWidth: implicitWidth + batteryItemToolTip._s
-                Layout.minimumHeight: implicitHeight + batteryItemToolTip._s * 2
-                Layout.maximumWidth: implicitWidth + batteryItemToolTip._s
-                Layout.maximumHeight: implicitHeight + batteryItemToolTip._s * 2
                 width: implicitWidth + batteryItemToolTip._s
                 height: implicitHeight + batteryItemToolTip._s * 2
 

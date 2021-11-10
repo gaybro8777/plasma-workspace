@@ -556,7 +556,7 @@ void PanelView::resizePanel()
 
     if (formFactor() == Plasma::Types::Vertical) {
         const int minSize = qMax(MINSIZE, m_minLength);
-        const int maxSize = qMin(m_maxLength, m_screenToFollow->size().height() - m_offset - 40);
+        const int maxSize = qMin(m_maxLength, m_screenToFollow->size().height() - m_offset);
         targetMinSize = QSize(thickness(), minSize);
         targetMaxSize = QSize(thickness(), maxSize);
         targetSize = QSize(thickness(), qBound(minSize, m_contentLength, maxSize));
@@ -567,6 +567,7 @@ void PanelView::resizePanel()
         targetMaxSize = QSize(maxSize, thickness());
         targetSize = QSize(qBound(minSize, m_contentLength, maxSize), thickness());
     }
+    qDebug() << targetSize;
     if (minimumSize() != targetMinSize) {
         setMinimumSize(targetMinSize);
     }
@@ -1067,6 +1068,7 @@ void PanelView::updateMask()
             const QVariant maskProperty = rootObject->property("panelMask");
             if (static_cast<QMetaType::Type>(maskProperty.type()) == QMetaType::QRegion) {
                 mask = maskProperty.value<QRegion>();
+                mask.translate(rootObject()->property("leftFloatingPadding").toInt(), 0);
             }
         }
 

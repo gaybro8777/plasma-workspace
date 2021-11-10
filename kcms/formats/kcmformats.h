@@ -30,6 +30,8 @@ public:
     OptionsModel *optionsModel() const;
     Q_INVOKABLE QQuickItem *getSubPage(int index) const; // proxy from KQuickAddons to Qml
     Q_INVOKABLE void unset(const QString &setting);
+    Q_INVOKABLE void cacheLangPage(QQuickItem *langPage);
+    Q_INVOKABLE QQuickItem *cachedLangPage();
 Q_SIGNALS:
     void takeEffectNextTime();
     void startGenerateLocale();
@@ -43,4 +45,5 @@ private:
     OptionsModel *m_optionsModel;
     FormatsSettings *m_settings;
     LocaleGenerator *m_generator{nullptr};
+    QQuickItem *m_langPage{nullptr};
 };

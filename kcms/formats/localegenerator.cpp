@@ -15,8 +15,7 @@ LocaleGenerator::LocaleGenerator(QObject *parent)
     : QObject(parent)
 {
 #ifdef GLIBC_LOCALE
-    m_interface =
-            new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
+    m_interface = new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
     qCDebug(KCM_FORMATS) << "connect: " << m_interface->isValid();
     connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
         if (success) {
@@ -90,7 +89,9 @@ void LocaleGenerator::ubuntuInstall(const QStringList &locales)
     }
     QStringList args;
     args.reserve(locales.size() * 2);
-    std::transform(locales.begin(), locales.end(), std::back_inserter(args), [](const QString &locale){return QStringList({QStringLiteral("-l"), locale});});
+    std::transform(locales.begin(), locales.end(), std::back_inserter(args), [](const QString &locale) {
+        return QStringList({QStringLiteral("-l"), locale});
+    });
     m_proc->setProgram("/usr/bin/check-language-support");
     m_proc->setArguments(args);
     connect(m_proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &LocaleGenerator::ubuntuLangCheck);

@@ -7,6 +7,7 @@
 */
 
 #include <QCollator>
+#include <QQuickItem>
 
 #include <KAboutData>
 #include <KLocalizedString>
@@ -117,5 +118,14 @@ void KCMFormats::unset(const QString &setting)
         settings()->setMonetary(settings()->defaultMonetaryValue());
     }
     settings()->config()->group(QStringLiteral("Formats")).deleteEntry(entry);
+}
+
+void KCMFormats::cacheLangPage(QQuickItem *langPage)
+{
+    m_langPage = langPage;
+}
+QQuickItem *KCMFormats::cachedLangPage()
+{
+    return m_langPage;
 }
 #include "kcmformats.moc"

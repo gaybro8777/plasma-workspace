@@ -77,7 +77,7 @@ KCM.ScrollViewKCM {
                 enabled: !kcm.settings.lang.startsWith(languageView.currentLang);
                 onClicked: {
                     kcm.settings.lang = languageView.currentLang;
-                    kcm.pop();
+                    kcm.cacheLangPage(kcm.takeLast());
                 }
             }
         }

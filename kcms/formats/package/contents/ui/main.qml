@@ -55,15 +55,19 @@ KCM.ScrollViewKCM {
             reserveSpaceForSubtitle: true
             onClicked: {
                 if (model.page === "lang") {
-                    languageSelectPage.active = true;
-                    kcm.push(languageSelectPage.item);
-                    langPageSelected = true;
+                    if (kcm.cachedLangPage()) {
+                        kcm.push(kcm.cachedLangPage());
+                    } else {
+                        languageSelectPage.active = true;
+                        kcm.push(languageSelectPage.item);
+                        langPageSelected = true;
+                    }
                     return;
                 }
 
                 if (langPageSelected) {
                     langPageSelected = false;
-                    kcm.pop();
+                    kcm.cacheLangPage(kcm.takeLast());
                 }
 
                 if (kcm.depth === 1) {

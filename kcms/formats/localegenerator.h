@@ -38,6 +38,6 @@ private:
     QProcess *m_proc{nullptr};
     QStringList m_packageIDs;
 #ifdef GLIBC_LOCALE
-    LocaleGenHelper *m_interface {nullptr};
+    LocaleGenHelper *m_interface{nullptr};
 #endif
 };

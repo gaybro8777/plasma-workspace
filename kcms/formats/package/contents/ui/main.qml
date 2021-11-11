@@ -17,27 +17,32 @@ KCM.ScrollViewKCM {
     id: root
     implicitHeight: Kirigami.Units.gridUnit * 40
     implicitWidth: Kirigami.Units.gridUnit * 20
-    Kirigami.InlineMessage {
-        id: takeEffectNextTimeMsg
-        text: i18n("Your changes will take effect the next time you log in.")
-    }
-    Kirigami.InlineMessage {
-        id: installFontMsg
-        text: i18n("System locales have been generated, but you may want to install fonts for the language")
-    }
-    Kirigami.InlineMessage {
-        id: allManualMsg
-        text: i18n("You may want to generate system locales and install the fonts")
+    header: Column {
+        Kirigami.InlineMessage {
+            id: takeEffectNextTimeMsg
+            text: i18n("Your changes will take effect the next time you log in.")
+        }
+        Kirigami.InlineMessage {
+            id: installFontMsg
+            text: i18n("System locales have been generated, but you may want to install fonts for the language")
+        }
+        Kirigami.InlineMessage {
+            id: allManualMsg
+            text: i18n("You may want to generate system locales and install the fonts")
+        }
     }
 
     Connections {
         target: kcm
         function onStartGenerateLocale() {
-            header = takeEffectNextTimeMsg;
             takeEffectNextTimeMsg.visible = true;
+            header.implicitHeight += takeEffectNextTimeMsg.implicitHeight;
+            console.log("take effect next time signal")
         }
         function onRequireInstallFont() {
             installFontMsg.visible = true;
+            header.implicitHeight += takeEffectNextTimeMsg.implicitHeight;
+            console.log("install font signal")
         }
         function onAllManual() {
             allManualMsg.visible = true;
@@ -99,8 +104,6 @@ KCM.ScrollViewKCM {
                 localeListView.currentIndex = -1;
                 localeListModel.selectedConfig = setting;
                 switch (setting) {
-                case "lang":
-                    return i18n("Region");
                 case "numeric":
                     return i18n("Number");
                 case "time":

@@ -25,7 +25,7 @@ LocaleListModel::LocaleListModel()
 {
     QList<QLocale> m_locales = QLocale::matchingLocales(QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry);
     m_localeTuples.reserve(m_locales.size() + 1);
-    m_localeTuples.push_back(std::tuple<QString, QString, QString, QLocale>(i18n("Default"), i18n("Default"), i18n("Default"), QLocale()));
+    m_localeTuples.push_back(std::tuple<QString, QString, QString, QLocale>(i18n("Default"), i18n("System"), i18n("Default"), QLocale()));
     for (auto &locale : m_locales) {
         m_localeTuples.push_back(
             std::tuple<QString, QString, QString, QLocale>(locale.nativeLanguageName(), locale.nativeCountryName(), locale.name(), locale));
@@ -78,7 +78,7 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
         case Numeric:
             return Utility::numericExample(locale);
         case Time:
-            return Utility::shortTimeExample(locale);
+            return Utility::timeExample(locale);
         case Currency:
             return Utility::monetaryExample(locale);
         case Measurement:

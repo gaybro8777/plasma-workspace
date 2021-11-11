@@ -76,7 +76,7 @@ KCM.ScrollViewKCM {
                 text: i18nc("@action:button", "Apply")
                 enabled: !kcm.settings.lang.startsWith(languageView.currentLang);
                 onClicked: {
-                    kcm.settings.lang = languageView.currentLang;
+                    kcm.settings.lang = kcm.toGlibcLocale(languageView.currentLang);
                     kcm.cacheLangPage(kcm.takeLast());
                 }
             }

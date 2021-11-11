@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Formats
+Name=Region & Language
 Name[ar]=التنسيقات
 Name[az]=Formatlar
 Name[ca]=Formats
@@ -37,7 +37,7 @@ Name[uk]=Формати
 Name[vi]=Dạng thức
 Name[x-test]=xxFormatsxx
 Name[zh_CN]=格式
-Comment=Numeric, Currency and Time Formats
+Comment=Set Language, Numeric, Currency and Time Formats
 Comment[ar]=تنسيقات الأرقام والعملات والوقت 
 Comment[az]=Say, Valyuta və Vaxt formatları
 Comment[ca]=Format numèric, monetari i horari
@@ -77,5 +77,5 @@ Comment[zh_CN]=数字、货币和时间格式
 
 Icon=preferences-desktop-locale
 Type=Application
-Exec=systemsettings kcm_formats
+Exec=systemsettings kcm_regionandlang
 NoDisplay=true

@@ -16,7 +16,7 @@ LocaleGenerator::LocaleGenerator(QObject *parent)
 {
 #ifdef GLIBC_LOCALE
     m_interface = new LocaleGenHelper(QStringLiteral("org.kde.localegenhelper"), QStringLiteral("/LocaleGenHelper"), QDBusConnection::systemBus(), this);
-    qCDebug(KCM_FORMATS) << "connect: " << m_interface->isValid();
+    qCDebug(kcm_regionandlang) << "connect: " << m_interface->isValid();
     connect(m_interface, &LocaleGenHelper::success, this, [this](bool success) {
         if (success) {
 #ifdef OS_UBUNTU
@@ -57,7 +57,7 @@ QString LocaleGenerator::supportMode() const
  * */
 void LocaleGenerator::localesGenerate(const QStringList &list)
 {
-    qCDebug(KCM_FORMATS) << "enable locales: " << list;
+    qCDebug(kcm_regionandlang) << "enable locales: " << list;
 #ifdef OS_UBUNTU
     ubuntuInstall(list);
     return;
@@ -115,19 +115,19 @@ void LocaleGenerator::ubuntuLangCheck(int status, QProcess::ExitStatus exit)
         m_packageIDs << packageID;
     });
     connect(transaction, &PackageKit::Transaction::errorCode, this, [](PackageKit::Transaction::Error error, const QString &details) {
-        qCDebug(KCM_FORMATS) << "resolve error" << error << details;
+        qCDebug(kcm_regionandlang) << "resolve error" << error << details;
     });
     connect(transaction, &PackageKit::Transaction::finished, this, [packages, this](PackageKit::Transaction::Exit status, uint code) {
-        qCDebug(KCM_FORMATS) << "resolve finished" << status << code << m_packageIDs;
+        qCDebug(kcm_regionandlang) << "resolve finished" << status << code << m_packageIDs;
         if (m_packageIDs.size() != packages.size()) {
-            qCWarning(KCM_FORMATS) << "Not all missing packages managed to resolve!" << packages << m_packageIDs;
+            qCWarning(kcm_regionandlang) << "Not all missing packages managed to resolve!" << packages << m_packageIDs;
         }
         auto transaction = PackageKit::Daemon::installPackages(m_packageIDs);
         connect(transaction, &PackageKit::Transaction::errorCode, this, [](PackageKit::Transaction::Error error, const QString &details) {
-            qCDebug(KCM_FORMATS) << "install error:" << error << details;
+            qCDebug(kcm_regionandlang) << "install error:" << error << details;
         });
         connect(transaction, &PackageKit::Transaction::finished, this, [this](PackageKit::Transaction::Exit status, uint code) {
-            qCDebug(KCM_FORMATS) << "install finished:" << status << code;
+            qCDebug(kcm_regionandlang) << "install finished:" << status << code;
             Q_EMIT success();
         });
     });

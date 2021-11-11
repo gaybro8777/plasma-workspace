@@ -24,7 +24,7 @@ install(FILES org.kde.localegenhelper.conf DESTINATION "/usr/share/dbus-1/system
 install(FILES org.kde.localegenhelper.policy DESTINATION "/usr/share/polkit-1/actions")
 endif()
 
-set(kcm_formats_PART_SRCS
+set(kcm_regionandlang_PART_SRCS
     kcmformats.cpp
     localelistmodel.cpp
     formatssettings.cpp
@@ -33,40 +33,41 @@ set(kcm_formats_PART_SRCS
     languagelistmodel.cpp
     localegenerator.cpp
 )
-kconfig_add_kcfg_files(kcm_formats_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
+kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
 
 if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
 set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)
-qt5_add_dbus_interface(kcm_formats_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
+qt5_add_dbus_interface(kcm_regionandlang_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
 endif()
 
 ecm_qt_declare_logging_category(
-    kcm_formats_PART_SRCS
+    kcm_regionandlang_PART_SRCS
     HEADER debug.h
-    IDENTIFIER KCM_FORMATS
-    CATEGORY_NAME org.kde.kcm_formats
+    IDENTIFIER kcm_regionandlang
+    CATEGORY_NAME org.kde.kcm_regionandlang
     DESCRIPTION "Formats KCM"
-    EXPORT kcm_formats
+    EXPORT kcm_regionandlang
 )
 
 ecm_qt_install_logging_categories(
-    EXPORT kcm_formats
+    EXPORT kcm_regionandlang
     DESTINATION "${KDE_INSTALL_LOGGINGCATEGORIESDIR}"
 )
-kcoreaddons_add_plugin(kcm_formats SOURCES ${kcm_formats_PART_SRCS} INSTALL_NAMESPACE "kcms")
+
+kcoreaddons_add_plugin(kcm_regionandlang SOURCES ${kcm_regionandlang_PART_SRCS} INSTALL_NAMESPACE "kcms")
 kcoreaddons_desktop_to_json(kcm_formats "kcm_formats.desktop")
-target_link_libraries(kcm_formats
+target_link_libraries(kcm_regionandlang
     KF5::I18n
     KF5::KCMUtils
     KF5::QuickAddons)
 if(UBUNTU_PACKAGEKIT)
-    target_link_libraries(kcm_formats PK::packagekitqt5)
+    target_link_libraries(kcm_regionandlang PK::packagekitqt5)
 endif()
 if(UBUNTU_PACKGEKIT OR GLIBC_LOCALE_GEN)
-    target_link_libraries(kcm_formats Qt::DBus)
+    target_link_libraries(kcm_regionandlang Qt::DBus)
 endif()
 
 ########### install files ###############
 install(TARGETS kcm_formats  DESTINATION ${KDE_INSTALL_PLUGINDIR}/kcms )
 install(FILES kcm_formats.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-kpackage_install_package(package kcm_formats kcms)
+kpackage_install_package(package kcm_regionandlang kcms)

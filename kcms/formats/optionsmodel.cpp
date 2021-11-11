@@ -15,7 +15,7 @@ OptionsModel::OptionsModel(KCMFormats *parent)
     : QAbstractListModel(parent)
     , m_settings(parent->settings())
 {
-    m_staticNames = {{{i18n("Region"), QStringLiteral("lang")},
+    m_staticNames = {{{i18n("Language"), QStringLiteral("lang")},
                       {i18n("Number"), QStringLiteral("numeric")},
                       {i18n("Time"), QStringLiteral("time")},
                       {i18n("Currency"), QStringLiteral("currency")},

@@ -124,7 +124,7 @@ QString LanguageListModel::currencyExample() const
 
 QString LanguageListModel::timeExample() const
 {
-    return exampleHelper(Utility::shortTimeExample);
+    return exampleHelper(Utility::timeExample);
 }
 
 QString LanguageListModel::metric() const

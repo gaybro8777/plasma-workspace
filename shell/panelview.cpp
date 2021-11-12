@@ -529,17 +529,17 @@ QRect PanelView::geometryByDistance(int distance) const
     default:
         switch (m_alignment) {
         case Qt::AlignCenter:
-            position = QPoint(QPoint(screenGeometry.center().x(), screenGeometry.bottom() - thickness() - distance) + QPoint(m_offset - width() / 2, 1));
+            position = QPoint(QPoint(screenGeometry.center().x(), screenGeometry.bottom() - thickness() - m_topFloatingPadding - m_bottomFloatingPadding - distance) + QPoint(m_offset - width() / 2, 1));
             break;
         case Qt::AlignRight:
-            position = QPoint(screenGeometry.bottomRight() - QPoint(0, thickness() + distance) - QPoint(m_offset + width(), -1));
+            position = QPoint(screenGeometry.bottomRight() - QPoint(0, thickness() - m_topFloatingPadding - m_bottomFloatingPadding + distance) - QPoint(m_offset + width(), -1));
             break;
         case Qt::AlignLeft:
         default:
-            position = QPoint(screenGeometry.bottomLeft() - QPoint(0, thickness() + distance) + QPoint(m_offset, 1));
+            position = QPoint(screenGeometry.bottomLeft() - QPoint(0, thickness() - m_topFloatingPadding - m_bottomFloatingPadding + distance) + QPoint(m_offset, 1));
         }
     }
-    QRect ret = formFactor() == Plasma::Types::Vertical ? QRect(position, QSize(thickness(), height())) : QRect(position, QSize(width(), thickness()));
+    QRect ret = formFactor() == Plasma::Types::Vertical ? QRect(position, QSize(thickness() - m_topFloatingPadding - m_bottomFloatingPadding, height())) : QRect(position, QSize(width(), thickness() - m_topFloatingPadding - m_bottomFloatingPadding));
     ret = ret.intersected(screenGeometry);
     return ret;
 }
@@ -561,11 +561,12 @@ void PanelView::resizePanel()
         targetMaxSize = QSize(thickness(), maxSize);
         targetSize = QSize(thickness(), qBound(minSize, m_contentLength, maxSize));
     } else {
+        const int verticalPadding = m_topFloatingPadding + m_bottomFloatingPadding;
         const int minSize = qMax(MINSIZE, m_minLength);
         const int maxSize = qMin(m_maxLength, m_screenToFollow->size().width() - m_offset);
-        targetMinSize = QSize(minSize, thickness());
-        targetMaxSize = QSize(maxSize, thickness());
-        targetSize = QSize(qBound(minSize, m_contentLength, maxSize), thickness());
+        targetMinSize = QSize(minSize, thickness() + verticalPadding);
+        targetMaxSize = QSize(maxSize, thickness() + verticalPadding);
+        targetSize = QSize(qBound(minSize, m_contentLength, maxSize), thickness() + verticalPadding);
     }
     qDebug() << targetSize;
     if (minimumSize() != targetMinSize) {
@@ -1068,7 +1069,8 @@ void PanelView::updateMask()
             const QVariant maskProperty = rootObject->property("panelMask");
             if (static_cast<QMetaType::Type>(maskProperty.type()) == QMetaType::QRegion) {
                 mask = maskProperty.value<QRegion>();
-                mask.translate(rootObject()->property("leftFloatingPadding").toInt(), 0);
+                mask.translate(rootObject->property("leftFloatingPadding").toInt(),
+                               rootObject->property("topFloatingPadding").toInt());
             }
         }
 
@@ -1185,7 +1187,7 @@ void PanelView::updateStruts()
             break;
 
         case Plasma::Types::BottomEdge:
-            strut.bottom_width = thickness() + bottomOffset;
+            strut.bottom_width = thickness() + m_topFloatingPadding + m_bottomFloatingPadding + bottomOffset;
             strut.bottom_start = x();
             strut.bottom_end = x() + width() - 1;
             //                 qDebug() << "setting bottom edge to" << strut.bottom_width << strut.bottom_start << strut.bottom_end;
@@ -1277,6 +1279,10 @@ void PanelView::handleQmlStatusChange(QQmlComponent::Status status)
         int floatingSignal = rootObject->metaObject()->indexOfSignal(SIGNAL(floatingChanged()));
         if (floatingSignal >= 0) {
             connect(rootObject, SIGNAL(floatingChanged()), this, SLOT(updateFloating()));
+            connect(rootObject, SIGNAL(bottomFloatingPaddingChanged()), this, SLOT(updatePadding()));
+            connect(rootObject, SIGNAL(topFloatingPaddingChanged()), this, SLOT(updatePadding()));
+            connect(rootObject, SIGNAL(rightFloatingPaddingChanged()), this, SLOT(updatePadding()));
+            connect(rootObject, SIGNAL(leftFloatingPaddingChanged()), this, SLOT(updatePadding()));
         }
 
         const QVariant maskProperty = rootObject->property("panelMask");
@@ -1412,6 +1418,10 @@ void PanelView::updateFloating()
     } else {
         PanelShadows::self()->addWindow(this);
     }
+    m_leftFloatingPadding = rootObject()->property("leftFloatingPadding").toInt();
+    m_rightFloatingPadding = rootObject()->property("rightFloatingPadding").toInt();
+    m_topFloatingPadding = rootObject()->property("topFloatingPadding").toInt();
+    m_bottomFloatingPadding = rootObject()->property("bottomFloatingPadding").toInt();
 }
 
 #include "moc_panelview.cpp"

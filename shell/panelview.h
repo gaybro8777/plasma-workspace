@@ -243,6 +243,10 @@ private:
     int m_topPadding;
     int m_leftPadding;
     int m_rightPadding;
+    int m_bottomFloatingPadding;
+    int m_topFloatingPadding;
+    int m_leftFloatingPadding;
+    int m_rightFloatingPadding;
     bool m_initCompleted;
     bool m_containsMouse = false;
     bool m_fakeEventPending = false;

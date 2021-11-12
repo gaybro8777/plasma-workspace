@@ -17,38 +17,24 @@ KCM.ScrollViewKCM {
     id: root
     implicitHeight: Kirigami.Units.gridUnit * 40
     implicitWidth: Kirigami.Units.gridUnit * 20
-    header: Column {
-        Kirigami.InlineMessage {
+    header: Kirigami.InlineMessage {
             id: takeEffectNextTimeMsg
             text: i18n("Your changes will take effect the next time you log in.")
         }
-        Kirigami.InlineMessage {
-            id: installFontMsg
-            text: i18n("System locales have been generated, but you may want to install fonts for the language")
-        }
-        Kirigami.InlineMessage {
-            id: allManualMsg
-            text: i18n("You may want to generate system locales and install the fonts")
-        }
-    }
 
     Connections {
         target: kcm
         function onStartGenerateLocale() {
             takeEffectNextTimeMsg.visible = true;
-            header.implicitHeight += takeEffectNextTimeMsg.implicitHeight;
-            console.log("take effect next time signal")
         }
         function onRequireInstallFont() {
-            installFontMsg.visible = true;
-            header.implicitHeight += takeEffectNextTimeMsg.implicitHeight;
-            console.log("install font signal")
+            takeEffectNextTimeMsg.text += "\n" + i18n("Locales has been generated, but you may want to install fonts yourself");
         }
         function onAllManual() {
-            allManualMsg.visible = true;
+            takeEffectNextTimeMsg.text += "\n" + i18n("Failed to generated locales, you should enable it and install font packages");
         }
         function onGenerateFinished() {
-            console.log("all set");
+            takeEffectNextTimeMsg.text += "\n" + i18n("Locales and language packages has been installed.");
         }
     }
 
@@ -59,30 +45,30 @@ KCM.ScrollViewKCM {
             subtitle: model.example
             reserveSpaceForSubtitle: true
             onClicked: {
+                while (kcm.depth !== 1) {
+                    // LocaleSelectPage is cached via Loader
+                    if (langPageSelected) {
+                        kcm.cacheLangPage(kcm.takeLast());
+                    } else {
+                        kcm.takeLast();
+                    }
+                }
+
                 if (model.page === "lang") {
                     if (kcm.cachedLangPage()) {
                         kcm.push(kcm.cachedLangPage());
                     } else {
                         languageSelectPage.active = true;
                         kcm.push(languageSelectPage.item);
-                        langPageSelected = true;
                     }
-                    return;
-                }
-
-                if (langPageSelected) {
+                    langPageSelected = true;
+                } else {
                     langPageSelected = false;
-                    kcm.cacheLangPage(kcm.takeLast());
-                }
-
-                if (kcm.depth === 1) {
-                    localeListPage.active = true;
+                    if (!localeListPage.active) {
+                        localeListPage.active = true;
+                    }
                     localeListPage.item.setting = model.page;
                     kcm.push(localeListPage.item);
-                } else {
-                    kcm.getSubPage(0).setting = model.page;
-                    kcm.getSubPage(0).filterText = '';
-                    kcm.currentIndex = 1;
                 }
             }
         }
@@ -166,7 +152,7 @@ KCM.ScrollViewKCM {
                             kcm.unset(setting);
                         }
 
-                        kcm.currentIndex = 0;
+                        kcm.takeLast();
                     }
                 }
             }

@@ -15,6 +15,10 @@ import LanguageListModel 1.0
 
 KCM.ScrollViewKCM {
     property var languageListModel: null
+    header: QQC2.Label {
+        text: i18n("The language on the top will be used first if Apps support it")
+    }
+
     Component {
         id: languagesListItemComponent
 
@@ -35,48 +39,6 @@ KCM.ScrollViewKCM {
                         }
                     }
 
-                    //                    QQC2.BusyIndicator {
-                    //                        visible: model.IsInstalling
-                    //                        running: visible
-                    //                        // the control style (e.g. org.kde.desktop) may force a padding that will shrink the indicator way down. ignore it.
-                    //                        padding: 0
-
-                    //                        Layout.alignment: Qt.AlignVCenter
-
-                    //                        implicitWidth: Kirigami.Units.iconSizes.small
-                    //                        implicitHeight: implicitWidth
-
-                    //                        QQC2.ToolTip {
-                    //                            text: xi18nc('@info:tooltip/rich',
-                    //                                         'Installing missing packages to complete this translation.')
-                    //                        }
-                    //                    }
-
-                    //                    Kirigami.Icon {
-                    //                        visible: model.IsIncomplete
-
-                    //                        Layout.alignment: Qt.AlignVCenter
-
-                    //                        implicitWidth: Kirigami.Units.iconSizes.small
-                    //                        implicitHeight: implicitWidth
-
-                    //                        source: "data-warning"
-                    //                        color: Kirigami.Theme.negativeTextColor
-                    //                        MouseArea {
-                    //                            id: area
-                    //                            anchors.fill: parent
-                    //                            hoverEnabled: true
-                    //                        }
-                    //                        QQC2.ToolTip {
-                    //                            visible: area.containsMouse
-                    //                            text: xi18nc('@info:tooltip/rich',
-                    //                                         `Not all translations for this language are installed.
-                    //                                          Use the <interface>Install Missing Packages</interface> button to download
-                    //                                          and install all missing packages.`)
-                    //                        }
-
-                    //                    }
-
                     QQC2.Label {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
@@ -93,12 +55,6 @@ KCM.ScrollViewKCM {
                 }
 
                 actions: [
-                    //                Kirigami.Action {
-                    //                    visible: model.IsIncomplete
-                    //                    iconName: "install"
-                    //                    tooltip: i18nc("@info:tooltip", "Install Missing Packages")
-                    //                    onTriggered: model.Object.complete()
-                    //                },
                     Kirigami.Action {
                         enabled: index > 0
                         visible: languageListView.count > 1

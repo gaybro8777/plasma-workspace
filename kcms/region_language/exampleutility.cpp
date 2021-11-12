@@ -38,8 +38,7 @@ QString Utility::monetaryExample(const QLocale &locale)
 
 QString Utility::timeExample(const QLocale &locale)
 {
-    return locale.toString(QDateTime::currentDateTime()) + QLatin1Char('\n')
-        + locale.toString(QDateTime::currentDateTime(), QLocale::ShortFormat);
+    return locale.toString(QDateTime::currentDateTime()) + QLatin1Char('\n') + locale.toString(QDateTime::currentDateTime(), QLocale::ShortFormat);
 }
 
 QString Utility::shortTimeExample(const QLocale &locale)

@@ -1,5 +1,5 @@
 # KI18N Translation Domain for this library
-add_definitions(-DTRANSLATION_DOMAIN=\"kcmformats\")
+add_definitions(-DTRANSLATION_DOMAIN=\"kcmregionandlang\")
 
 if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
 find_package(PolkitQt5-1)
@@ -43,9 +43,9 @@ endif()
 ecm_qt_declare_logging_category(
     kcm_regionandlang_PART_SRCS
     HEADER debug.h
-    IDENTIFIER kcm_regionandlang
+    IDENTIFIER KCM_REGIONANDLANG
     CATEGORY_NAME org.kde.kcm_regionandlang
-    DESCRIPTION "Formats KCM"
+    DESCRIPTION "Region and Language KCM"
     EXPORT kcm_regionandlang
 )
 

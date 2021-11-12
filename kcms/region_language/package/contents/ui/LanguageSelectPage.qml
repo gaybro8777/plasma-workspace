@@ -67,7 +67,7 @@ KCM.ScrollViewKCM {
         RowLayout {
             Layout.alignment: Qt.AlignRight
             QQC2.Button {
-                text: i18nc("@action:button", "Advanced Settings")
+                text: i18nc("@action:button", "Language Preference")
 
                 onClicked: kcm.push("AdvancedLanguageSelectPage.qml", {"languageListModel": languageListModel})
             }

@@ -155,14 +155,21 @@ if(${AppStreamQt_FOUND})
     set(HAVE_APPSTREAMQT true)
 endif()
 
-find_package(PackageKitQt5)
-set_package_properties(PackageKitQt5
-        PROPERTIES DESCRIPTION "Software Manager integration"
-        TYPE OPTIONAL
-        PURPOSE "Used to install additional language packages on demand"
-        )
-if(PackageKitQt5_FOUND)
-    set(HAVE_PACKAGEKIT TRUE)
+option(UBUNTU_PACKAGEKIT "Install required package for language on Ubuntu Based systems, PackageKitQt5 required" OFF)
+if(UBUNTU_PACKAGEKIT)
+    find_package(PackageKitQt5)
+    set_package_properties(PackageKitQt5
+            PROPERTIES DESCRIPTION "Software Manager integration"
+            TYPE OPTIONAL
+            PURPOSE "Used to install additional language packages on demand"
+            )
+    if(PackageKitQt5_FOUND)
+        set(OS_UBUNTU TRUE)
+    endif()
+endif()
+option(GLIBC_LOCALE_GEN "Auto generate Glibc locale with locale-gen and /etc/locale.gen" ON)
+if(GLIBC_LOCALE_GEN)
+    set(GLIBC_LOCALE TRUE)
 endif()
 
 

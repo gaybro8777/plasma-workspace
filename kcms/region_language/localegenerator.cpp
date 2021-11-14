@@ -89,9 +89,9 @@ void LocaleGenerator::ubuntuInstall(const QStringList &locales)
     }
     QStringList args;
     args.reserve(locales.size() * 2);
-    std::transform(locales.begin(), locales.end(), std::back_inserter(args), [](const QString &locale) {
-        return QStringList({QStringLiteral("-l"), locale});
-    });
+    for (const auto &locale : locales) {
+        args.append({QStringLiteral("-l"), locale});
+    }
     m_proc->setProgram("/usr/bin/check-language-support");
     m_proc->setArguments(args);
     connect(m_proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &LocaleGenerator::ubuntuLangCheck);

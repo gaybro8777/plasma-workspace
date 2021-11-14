@@ -45,6 +45,8 @@
         </code>
         <default code="true">lc_ctype</default>
     </entry>
+   </group>
+   <group name="Translations">
     <entry key="LANGUAGE" name="language" type="String">
        <code>
             auto language {QString::fromLocal8Bit(qgetenv("LANGUAGE"))};

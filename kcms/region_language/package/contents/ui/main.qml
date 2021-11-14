@@ -19,7 +19,7 @@ KCM.ScrollViewKCM {
     implicitWidth: Kirigami.Units.gridUnit * 20
     header: Kirigami.InlineMessage {
             id: takeEffectNextTimeMsg
-            text: i18n("Your changes will take effect the next time you log in.")
+            text: i18n("Your changes will take effect the next time you log in.\nGenerating Locales, don't turn off computer now.")
         }
 
     Connections {

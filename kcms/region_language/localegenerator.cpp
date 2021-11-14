@@ -90,7 +90,9 @@ void LocaleGenerator::ubuntuInstall(const QStringList &locales)
     QStringList args;
     args.reserve(locales.size() * 2);
     for (const auto &locale : locales) {
-        args.append({QStringLiteral("-l"), locale});
+        auto locale_stripped = locale;
+        locale_stripped.remove(QStringLiteral(".UTF-8"));
+        args.append({QStringLiteral("-l"), locale_stripped});
     }
     m_proc->setProgram("/usr/bin/check-language-support");
     m_proc->setArguments(args);

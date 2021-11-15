@@ -20,8 +20,8 @@ target_link_libraries(plasma-localegen-helper
 )
 ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${DBUS_SYSTEM_SERVICES_INSTALL_DIR} @ONLY)
 install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES org.kde.localegenhelper.conf DESTINATION "/usr/share/dbus-1/system.d")
-install(FILES org.kde.localegenhelper.policy DESTINATION "/usr/share/polkit-1/actions")
+install(FILES org.kde.localegenhelper.conf DESTINATION "${CMAKE_INSTALL_PREFIX}/share/dbus-1/system.d")
+install(FILES org.kde.localegenhelper.policy DESTINATION "${CMAKE_INSTALL_PREFIX}/share/polkit-1/actions")
 endif()
 
 set(kcm_regionandlang_PART_SRCS

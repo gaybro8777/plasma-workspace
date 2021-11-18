@@ -21,7 +21,7 @@
 #include "optionsmodel.h"
 #include "localegenerator.h"
 
-K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_formats.json")
+K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_regionandlang.json")
 
 KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
     : KQuickAddons::ManagedConfigModule(parent, data, args)

@@ -55,7 +55,7 @@ ecm_qt_install_logging_categories(
 )
 
 kcoreaddons_add_plugin(kcm_regionandlang SOURCES ${kcm_regionandlang_PART_SRCS} INSTALL_NAMESPACE "kcms")
-kcoreaddons_desktop_to_json(kcm_formats "kcm_formats.desktop")
+kcoreaddons_desktop_to_json(kcm_regionandlang "kcm_regionandlang.desktop")
 target_link_libraries(kcm_regionandlang
     KF5::I18n
     KF5::KCMUtils
@@ -68,6 +68,6 @@ if(UBUNTU_PACKGEKIT OR GLIBC_LOCALE_GEN)
 endif()
 
 ########### install files ###############
-install(TARGETS kcm_formats  DESTINATION ${KDE_INSTALL_PLUGINDIR}/kcms )
-install(FILES kcm_formats.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(TARGETS kcm_regionandlang  DESTINATION ${KDE_INSTALL_PLUGINDIR}/kcms )
+install(FILES kcm_regionandlang.desktop DESTINATION ${KDE_INSTALL_APPDIR})
 kpackage_install_package(package kcm_regionandlang kcms)

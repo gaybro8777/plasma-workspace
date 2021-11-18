@@ -9,7 +9,6 @@
 #include <QCollator>
 #include <QQuickItem>
 
-#include <KAboutData>
 #include <KLocalizedString>
 #include <KPluginFactory>
 #include <KSharedConfig>
@@ -26,16 +25,6 @@ K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_regionandlang.json")
 KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
     : KQuickAddons::ManagedConfigModule(parent, data, args)
 {
-    KAboutData *aboutData = new KAboutData(QStringLiteral("kcm_regionandlang"),
-                                           i18nc("@title", "Region & Language"),
-                                           QStringLiteral("0.1"),
-                                           QLatin1String(""),
-                                           KAboutLicense::LicenseKey::GPL_V2,
-                                           i18nc("@info:credit", "Copyright 2021 Han Young"));
-
-    aboutData->addAuthor(i18nc("@info:credit", "Han Young"), i18nc("@info:credit", "Author"), QStringLiteral("hanyoung@protonmail.com"));
-
-    setAboutData(aboutData);
     setQuickHelp(i18n("You can configure the formats used for time, dates, money and other numbers here."));
 
     qmlRegisterAnonymousType<FormatsSettings>("kcmformats", 1);

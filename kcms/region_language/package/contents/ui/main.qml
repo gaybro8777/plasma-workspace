@@ -19,7 +19,7 @@ KCM.ScrollViewKCM {
     implicitWidth: Kirigami.Units.gridUnit * 20
     header: Kirigami.InlineMessage {
             id: takeEffectNextTimeMsg
-            text: i18n("Your changes will take effect the next time you log in.\nGenerating Locales, don't turn off computer now.")
+            text: i18n("Your changes will take effect the next time you log in.\n\nGenerating Locales; don't turn off the computer yet.")
         }
 
     Connections {
@@ -28,13 +28,13 @@ KCM.ScrollViewKCM {
             takeEffectNextTimeMsg.visible = true;
         }
         function onRequireInstallFont() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Locales has been generated, but you may want to install fonts yourself");
+            takeEffectNextTimeMsg.text += "\n" + i18n("Locales have been generated, but you may want to install fonts yourself");
         }
         function onAllManual() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Failed to generated locales, you should enable it and install font packages");
+            takeEffectNextTimeMsg.text += "\n" + i18n("Failed to generate locales. You should enable it and install font packages");
         }
         function onGenerateFinished() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Locales and language packages has been installed.");
+            takeEffectNextTimeMsg.text += "\n" + i18n("Necessary locale and language packages have been installed. It is now safe to turn off the computer.");
         }
     }
 

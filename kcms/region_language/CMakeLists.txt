@@ -25,15 +25,15 @@ if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
 endif()
 
 set(kcm_regionandlang_PART_SRCS
-    kcmformats.cpp
+    kcmregionandlang.cpp
     localelistmodel.cpp
-    formatssettings.cpp
+    regionandlangsettings.cpp
     exampleutility.cpp
     optionsmodel.cpp
     languagelistmodel.cpp
     localegenerator.cpp
 )
-kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
+kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS regionandlangsettings.kcfgc GENERATE_MOC)
 
 if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
     set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)

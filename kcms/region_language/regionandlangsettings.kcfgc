@@ -1,5 +1,5 @@
-File=formatssettings.kcfg
-ClassName=FormatsSettings
+File=regionandlangsettings.kcfg
+ClassName=RegionAndLangSettings
 Mutators=true
 DefaultValueGetters=true
 GenerateProperties=true

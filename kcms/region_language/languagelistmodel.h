@@ -7,7 +7,7 @@
 #pragma once
 #include <QAbstractListModel>
 class SelectedLanguageModel;
-class FormatsSettings;
+class RegionAndLangSettings;
 class LanguageListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -34,7 +34,7 @@ public:
     QString timeExample() const;
     QString metric() const;
 
-    Q_INVOKABLE void setFormatsSettings(QObject *settings);
+    Q_INVOKABLE void setRegionAndLangSettings(QObject *settings);
 Q_SIGNALS:
     void currentIndexChanged();
     void exampleChanged();
@@ -45,7 +45,7 @@ protected:
 
 private:
     QString exampleHelper(std::function<QString(const QLocale &)> func) const;
-    FormatsSettings *m_settings{nullptr};
+    RegionAndLangSettings *m_settings{nullptr};
     QList<QString> m_availableLanguages;
     SelectedLanguageModel *m_selectedLanguageModel;
     int m_index = -1;
@@ -59,7 +59,7 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void setFormatsSettings(FormatsSettings *settings);
+    void setRegionAndLangSettings(RegionAndLangSettings *settings);
 
     Q_INVOKABLE void move(int from, int to);
     Q_INVOKABLE void remove(int index);
@@ -67,6 +67,6 @@ public:
 
 private:
     void saveLanguages();
-    FormatsSettings *m_settings{nullptr};
+    RegionAndLangSettings *m_settings{nullptr};
     QList<QString> m_selectedLanguages;
 };

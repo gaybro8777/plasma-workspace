@@ -8,14 +8,14 @@
 #include <QAbstractListModel>
 #include <array>
 
-class FormatsSettings;
-class KCMFormats;
+class RegionAndLangSettings;
+class KCMRegionAndLang;
 class OptionsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
     enum Roles { Name = Qt::DisplayRole, Subtitle, Example, Page };
-    OptionsModel(KCMFormats *parent);
+    OptionsModel(KCMRegionAndLang *parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
@@ -31,5 +31,5 @@ private:
     QLocale localeWithDefault(const QString &val) const;
     std::array<std::pair<QString, QString>, 5> m_staticNames; // title, page
 
-    FormatsSettings *m_settings;
+    RegionAndLangSettings *m_settings;
 };

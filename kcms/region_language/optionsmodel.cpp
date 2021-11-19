@@ -7,11 +7,11 @@
 #include <KLocalizedString>
 
 #include "exampleutility.cpp"
-#include "formatssettings.h"
-#include "kcmformats.h"
+#include "kcmregionandlang.h"
 #include "optionsmodel.h"
+#include "regionandlangsettings.h"
 
-OptionsModel::OptionsModel(KCMFormats *parent)
+OptionsModel::OptionsModel(KCMRegionAndLang *parent)
     : QAbstractListModel(parent)
     , m_settings(parent->settings())
 {
@@ -20,17 +20,17 @@ OptionsModel::OptionsModel(KCMFormats *parent)
                       {i18n("Time"), QStringLiteral("time")},
                       {i18n("Currency"), QStringLiteral("currency")},
                       {i18n("Measurement"), QStringLiteral("measurement")}}};
-    connect(m_settings, &FormatsSettings::langChanged, this, &OptionsModel::handleLangChange);
-    connect(m_settings, &FormatsSettings::numericChanged, this, [this] {
+    connect(m_settings, &RegionAndLangSettings::langChanged, this, &OptionsModel::handleLangChange);
+    connect(m_settings, &RegionAndLangSettings::numericChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(1, 0), createIndex(1, 0), {Subtitle, Example});
     });
-    connect(m_settings, &FormatsSettings::timeChanged, this, [this] {
+    connect(m_settings, &RegionAndLangSettings::timeChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(2, 0), createIndex(2, 0), {Subtitle, Example});
     });
-    connect(m_settings, &FormatsSettings::monetaryChanged, this, [this] {
+    connect(m_settings, &RegionAndLangSettings::monetaryChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(3, 0), createIndex(3, 0), {Subtitle, Example});
     });
-    connect(m_settings, &FormatsSettings::measurementChanged, this, [this] {
+    connect(m_settings, &RegionAndLangSettings::measurementChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(4, 0), createIndex(4, 0), {Subtitle, Example});
     });
 }

@@ -1,5 +1,5 @@
 /*
-    kcmformats.cpp
+    kcmregionandlang.cpp
     SPDX-FileCopyrightText: 2014 Sebastian Kügler <sebas@kde.org>
     SPDX-FileCopyrightText: 2021 Han Young <hanyoung@protonmail.com>
 
@@ -13,38 +13,38 @@
 #include <KPluginFactory>
 #include <KSharedConfig>
 
-#include "formatssettings.h"
-#include "kcmformats.h"
+#include "kcmregionandlang.h"
 #include "languagelistmodel.h"
+#include "localegenerator.h"
 #include "localelistmodel.h"
 #include "optionsmodel.h"
-#include "localegenerator.h"
+#include "regionandlangsettings.h"
 
-K_PLUGIN_CLASS_WITH_JSON(KCMFormats, "kcm_regionandlang.json")
+K_PLUGIN_CLASS_WITH_JSON(KCMRegionAndLang, "kcm_regionandlang.json")
 
-KCMFormats::KCMFormats(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
+KCMRegionAndLang::KCMRegionAndLang(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
     : KQuickAddons::ManagedConfigModule(parent, data, args)
 {
     setQuickHelp(i18n("You can configure the formats used for time, dates, money and other numbers here."));
 
-    qmlRegisterAnonymousType<FormatsSettings>("kcmformats", 1);
-    qmlRegisterAnonymousType<OptionsModel>("kcmformats_optionsmodel", 1);
-    qmlRegisterAnonymousType<SelectedLanguageModel>("kcmformats_selectedLanguageModel", 1);
-    qmlRegisterType<LocaleListModel>("LocaleListModel", 1, 0, "LocaleListModel");
-    qmlRegisterType<LanguageListModel>("LanguageListModel", 1, 0, "LanguageListModel");
-    qmlRegisterType<LocaleGenerator>("LocaleGenerator", 1, 0, "LocaleGenerator");
-    m_settings = new FormatsSettings(this);
+    qmlRegisterAnonymousType<RegionAndLangSettings>("kcmregionandlang", 1);
+    qmlRegisterAnonymousType<OptionsModel>("kcmregionandlang", 1);
+    qmlRegisterAnonymousType<SelectedLanguageModel>("kcmregionandlang", 1);
+    qmlRegisterType<LocaleListModel>("kcmregionandlang", 1, 0, "LocaleListModel");
+    qmlRegisterType<LanguageListModel>("kcmregionandlang", 1, 0, "LanguageListModel");
+    qmlRegisterType<LocaleGenerator>("kcmregionandlang", 1, 0, "LocaleGenerator");
+    m_settings = new RegionAndLangSettings(this);
     m_optionsModel = new OptionsModel(this);
 }
 
-void KCMFormats::save()
+void KCMRegionAndLang::save()
 {
     // shouldn't have data race issue
     if (!m_generator) {
         m_generator = new LocaleGenerator(this);
-        connect(m_generator, &LocaleGenerator::allManual, this, &KCMFormats::allManual);
-        connect(m_generator, &LocaleGenerator::success, this, &KCMFormats::generateFinished);
-        connect(m_generator, &LocaleGenerator::needsFont, this, &KCMFormats::requireInstallFont);
+        connect(m_generator, &LocaleGenerator::allManual, this, &KCMRegionAndLang::allManual);
+        connect(m_generator, &LocaleGenerator::success, this, &KCMRegionAndLang::generateFinished);
+        connect(m_generator, &LocaleGenerator::needsFont, this, &KCMRegionAndLang::requireInstallFont);
     }
 
     // assemble full locales in use
@@ -73,21 +73,21 @@ void KCMFormats::save()
     Q_EMIT takeEffectNextTime();
 }
 
-FormatsSettings *KCMFormats::settings() const
+RegionAndLangSettings *KCMRegionAndLang::settings() const
 {
     return m_settings;
 }
 
-OptionsModel *KCMFormats::optionsModel() const
+OptionsModel *KCMRegionAndLang::optionsModel() const
 {
     return m_optionsModel;
 }
-QQuickItem *KCMFormats::getSubPage(int index) const
+QQuickItem *KCMRegionAndLang::getSubPage(int index) const
 {
     return subPage(index);
 }
 
-void KCMFormats::unset(const QString &setting)
+void KCMRegionAndLang::unset(const QString &setting)
 {
     const char *entry;
     if (setting == QStringLiteral("lang")) {
@@ -109,15 +109,15 @@ void KCMFormats::unset(const QString &setting)
     settings()->config()->group(QStringLiteral("Formats")).deleteEntry(entry);
 }
 
-void KCMFormats::cacheLangPage(QQuickItem *langPage)
+void KCMRegionAndLang::cacheLangPage(QQuickItem *langPage)
 {
     m_langPage = langPage;
 }
-QQuickItem *KCMFormats::cachedLangPage()
+QQuickItem *KCMRegionAndLang::cachedLangPage()
 {
     return m_langPage;
 }
-QString KCMFormats::toGlibcLocale(const QString &lang) const
+QString KCMRegionAndLang::toGlibcLocale(const QString &lang) const
 {
     static std::unordered_map<QString, QString> KDELocaleToGlibcLocale = {
         {QStringLiteral("sv"), QStringLiteral("sv_SE.UTF-8")},           {QStringLiteral("sk"), QStringLiteral("sk_SK.UTF-8")},
@@ -148,4 +148,4 @@ QString KCMFormats::toGlibcLocale(const QString &lang) const
         {QStringLiteral("el"), QStringLiteral("el_GR.UTF-8")},           {QStringLiteral("zh_CN"), QStringLiteral("zh_CN.UTF-8")}};
     return KDELocaleToGlibcLocale[lang];
 }
-#include "kcmformats.moc"
+#include "kcmregionandlang.moc"

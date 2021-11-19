@@ -18,7 +18,7 @@
  */
 #include "localelistmodel.h"
 #include "exampleutility.cpp"
-#include "kcmformats.h"
+#include "kcmregionandlang.h"
 #include <KLocalizedString>
 #include <QTextCodec>
 LocaleListModel::LocaleListModel()

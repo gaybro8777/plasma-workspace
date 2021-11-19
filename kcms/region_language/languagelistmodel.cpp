@@ -7,8 +7,8 @@
 #include "languagelistmodel.h"
 #include "debug.h"
 #include "exampleutility.cpp"
-#include "formatssettings.h"
-#include "kcmformats.h"
+#include "kcmregionandlang.h"
+#include "regionandlangsettings.h"
 
 #include <unordered_map>
 
@@ -132,11 +132,11 @@ QString LanguageListModel::metric() const
     return exampleHelper(Utility::measurementExample);
 }
 
-void LanguageListModel::setFormatsSettings(QObject *settings)
+void LanguageListModel::setRegionAndLangSettings(QObject *settings)
 {
-    if (FormatsSettings *formatsettings = dynamic_cast<FormatsSettings *>(settings)) {
-        m_settings = formatsettings;
-        m_selectedLanguageModel->setFormatsSettings(formatsettings);
+    if (RegionAndLangSettings *regionandlangsettings = dynamic_cast<RegionAndLangSettings *>(settings)) {
+        m_settings = regionandlangsettings;
+        m_selectedLanguageModel->setRegionAndLangSettings(regionandlangsettings);
         auto index = std::find_if(m_availableLanguages.begin(), m_availableLanguages.end(), [this](const QString &lang) {
             return m_settings->lang().startsWith(lang);
         });
@@ -148,7 +148,7 @@ void LanguageListModel::setFormatsSettings(QObject *settings)
     }
 }
 
-void SelectedLanguageModel::setFormatsSettings(FormatsSettings *settings)
+void SelectedLanguageModel::setRegionAndLangSettings(RegionAndLangSettings *settings)
 {
     m_settings = settings;
 

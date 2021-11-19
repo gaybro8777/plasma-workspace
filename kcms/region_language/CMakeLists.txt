@@ -2,26 +2,26 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"kcmregionandlang\")
 
 if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
-find_package(PolkitQt5-1)
-set(localegen_Helper_SRCS
-    localegenhelper.cpp
-)
-qt5_generate_dbus_interface(
-    ${CMAKE_CURRENT_SOURCE_DIR}/localegenhelper.h
-    org.kde.localegenhelper.xml
-    OPTIONS -s -m
-)
-qt5_add_dbus_adaptor(localegen_Helper_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml
-                     ${CMAKE_CURRENT_SOURCE_DIR}/localegenhelper.h LocaleGenHelper)
-add_executable(plasma-localegen-helper ${localegen_Helper_SRCS})
-target_link_libraries(plasma-localegen-helper
-    Qt::DBus
-    PolkitQt5-1::Core
-)
-ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${DBUS_SYSTEM_SERVICES_INSTALL_DIR} @ONLY)
-install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES org.kde.localegenhelper.conf DESTINATION "${CMAKE_INSTALL_PREFIX}/share/dbus-1/system.d")
-install(FILES org.kde.localegenhelper.policy DESTINATION "${CMAKE_INSTALL_PREFIX}/share/polkit-1/actions")
+    find_package(PolkitQt5-1)
+    set(localegen_Helper_SRCS
+        localegenhelper.cpp
+    )
+    qt5_generate_dbus_interface(
+        ${CMAKE_CURRENT_SOURCE_DIR}/localegenhelper.h
+        org.kde.localegenhelper.xml
+        OPTIONS -s -m
+    )
+    qt5_add_dbus_adaptor(localegen_Helper_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml
+                        ${CMAKE_CURRENT_SOURCE_DIR}/localegenhelper.h LocaleGenHelper)
+    add_executable(plasma-localegen-helper ${localegen_Helper_SRCS})
+    target_link_libraries(plasma-localegen-helper
+        Qt::DBus
+        PolkitQt5-1::Core
+    )
+    ecm_install_configured_files(INPUT org.kde.localegenhelper.service.in DESTINATION ${DBUS_SYSTEM_SERVICES_INSTALL_DIR} @ONLY)
+    install(TARGETS plasma-localegen-helper ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+    install(FILES org.kde.localegenhelper.conf DESTINATION "${CMAKE_INSTALL_PREFIX}/share/dbus-1/system.d")
+    install(FILES org.kde.localegenhelper.policy DESTINATION "${CMAKE_INSTALL_PREFIX}/share/polkit-1/actions")
 endif()
 
 set(kcm_regionandlang_PART_SRCS
@@ -36,8 +36,8 @@ set(kcm_regionandlang_PART_SRCS
 kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS formatssettings.kcfgc GENERATE_MOC)
 
 if(UBUNTU_PACKAGEKIT OR GLIBC_LOCALE_GEN)
-set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)
-qt5_add_dbus_interface(kcm_regionandlang_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
+    set(LocaleGenHelperXML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.localegenhelper.xml)
+    qt5_add_dbus_interface(kcm_regionandlang_PART_SRCS ${LocaleGenHelperXML} localegenhelperinterface )
 endif()
 
 ecm_qt_declare_logging_category(

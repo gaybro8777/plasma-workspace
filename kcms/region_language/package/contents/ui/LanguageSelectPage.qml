@@ -11,7 +11,7 @@ import QtQuick.Layouts 1.15
 
 import org.kde.kirigami 2.15 as Kirigami
 import org.kde.kcm 1.2 as KCM
-import LanguageListModel 1.0
+import kcmregionandlang 1.0
 
 KCM.ScrollViewKCM {
     id: languageSelectPage
@@ -19,7 +19,7 @@ KCM.ScrollViewKCM {
     LanguageListModel {
         id: languageListModel
         Component.onCompleted: {
-            languageListModel.setFormatsSettings(kcm.settings);
+            languageListModel.setRegionAndLangSettings(kcm.settings);
         }
     }
 

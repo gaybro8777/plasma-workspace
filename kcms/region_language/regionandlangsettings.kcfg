@@ -8,42 +8,28 @@
   <kcfgfile name="plasma-localerc" />
   <group name="Formats">
     <entry key="LANG" name="lang" type="String">
-        <default code="true">QString::fromLocal8Bit(qgetenv("LANG"))</default>
+        <code>
+            QString lang = QString::fromLocal8Bit(qgetenv("LANG"));
+            if (lang.isEmpty()) {
+                lang = i18n("System Default");
+            }
+        </code>
+        <default code="true">lang</default>
     </entry>
     <entry key="LC_NUMERIC" name="numeric" type="String">
-        <code>
-            auto lc_numeric {QString::fromLocal8Bit(qgetenv("LC_NUMERIC"))};
-            lc_numeric = lc_numeric.isEmpty() ? i18n("Default") : lc_numeric;
-        </code>
-        <default code="true">lc_numeric</default>
+        <default code="true">i18n("Inherit Language")</default>
     </entry>
     <entry key="LC_TIME" name="time" type="String">
-        <code>
-            auto lc_time {QString::fromLocal8Bit(qgetenv("LC_TIME"))};
-            lc_time = lc_time.isEmpty() ? i18n("Default") : lc_time;
-        </code>
-        <default code="true">lc_time</default>
+        <default code="true">i18n("Inherit Language")</default>
     </entry>
     <entry key="LC_MONETARY" name="monetary" type="String">
-        <code>
-            auto lc_monetary {QString::fromLocal8Bit(qgetenv("LC_MONETARY"))};
-            lc_monetary = lc_monetary.isEmpty() ? i18n("Default") : lc_monetary;
-        </code>
-        <default code="true">lc_monetary</default>
+        <default code="true">i18n("Inherit Language")</default>
     </entry>
     <entry key="LC_MEASUREMENT" name="measurement" type="String">
-        <code>
-            auto lc_measurement {QString::fromLocal8Bit(qgetenv("LC_MEASUREMENT"))};
-            lc_measurement = lc_measurement.isEmpty() ? i18n("Default") : lc_measurement;
-        </code>
-        <default code="true">lc_measurement</default>
+        <default code="true">i18n("Inherit Language")</default>
     </entry>
     <entry key="LC_CTYPE" name="ctype" type="String">
-        <code>
-            auto lc_ctype {QString::fromLocal8Bit(qgetenv("LC_CTYPE"))};
-            lc_ctype = lc_ctype.isEmpty() ? i18n("Default") : lc_ctype;
-        </code>
-        <default code="true">lc_ctype</default>
+        <default code="true">i18n("Inherit Language")</default>
     </entry>
    </group>
    <group name="Translations">
@@ -51,8 +37,8 @@
        <code>
             auto language {QString::fromLocal8Bit(qgetenv("LANGUAGE"))};
             language = language.isEmpty() ? i18n("Default") : language;
-        </code>
-        <default code="true">language</default>
+       </code>
+       <default code="true">language</default>
     </entry>
   </group>
 </kcfg>

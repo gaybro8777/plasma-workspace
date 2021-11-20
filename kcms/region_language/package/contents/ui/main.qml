@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.15
 
 import org.kde.kirigami 2.15 as Kirigami
 import org.kde.kcm 1.2 as KCM
-import LocaleListModel 1.0
+import kcmregionandlang 1.0
 
 KCM.ScrollViewKCM {
     property bool langPageSelected: false
@@ -91,13 +91,13 @@ KCM.ScrollViewKCM {
                 localeListModel.selectedConfig = setting;
                 switch (setting) {
                 case "numeric":
-                    return i18n("Number");
+                    return i18n("Numbers");
                 case "time":
                     return i18n("Time");
                 case "currency":
                     return i18n("Currency");
                 case "measurement":
-                    return i18n("Measurement");
+                    return i18n("Measurements");
                 case "collate":
                     return i18n("Collate");
                 }

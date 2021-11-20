@@ -16,10 +16,10 @@ OptionsModel::OptionsModel(KCMRegionAndLang *parent)
     , m_settings(parent->settings())
 {
     m_staticNames = {{{i18n("Language"), QStringLiteral("lang")},
-                      {i18n("Number"), QStringLiteral("numeric")},
+                      {i18n("Numbers"), QStringLiteral("numeric")},
                       {i18n("Time"), QStringLiteral("time")},
                       {i18n("Currency"), QStringLiteral("currency")},
-                      {i18n("Measurement"), QStringLiteral("measurement")}}};
+                      {i18n("Measurements"), QStringLiteral("measurement")}}};
     connect(m_settings, &RegionAndLangSettings::langChanged, this, &OptionsModel::handleLangChange);
     connect(m_settings, &RegionAndLangSettings::numericChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(1, 0), createIndex(1, 0), {Subtitle, Example});

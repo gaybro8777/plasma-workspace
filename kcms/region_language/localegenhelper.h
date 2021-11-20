@@ -8,9 +8,12 @@
 #include <PolkitQt1/Authority>
 #include <QCoreApplication>
 #include <QDBusContext>
+#include <QFile>
 #include <QObject>
 #include <QProcess>
 #include <QRegularExpression>
+
+#include <set>
 
 class QTimer;
 class LocaleGenHelper : public QObject, protected QDBusContext
@@ -29,8 +32,12 @@ private Q_SLOTS:
 private:
     bool editLocaleGen();
     void exitAfterTimeOut();
-    bool checkShouldGenerate();
+    bool shouldGenerate(const QStringList &locales);
     bool validateLocales();
+
+    std::atomic<bool> m_isGenerating = false;
+    bool m_comment = false;
+    std::set<QString> m_alreadyEnabled;
     PolkitQt1::Authority *m_authority;
     QStringList m_locales;
     QTimer *m_timer;

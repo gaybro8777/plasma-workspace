@@ -51,6 +51,7 @@ void LocaleGenHelper::enableLocales(const QStringList &locales)
                                         PolkitQt1::SystemBusNameSubject(message().service()),
                                         PolkitQt1::Authority::AllowUserInteraction);
     } else {
+        exitAfterTimeOut();
         Q_EMIT success(true);
     }
 }

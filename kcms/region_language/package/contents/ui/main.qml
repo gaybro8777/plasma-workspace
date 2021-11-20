@@ -77,7 +77,7 @@ KCM.ScrollViewKCM {
     Loader {
         id: languageSelectPage
         active: false
-        source: "LanguageSelectPage.qml"
+        source: "AdvancedLanguageSelectPage.qml"
     }
 
     Loader {

@@ -32,7 +32,7 @@ public:
     Q_INVOKABLE void unset(const QString &setting);
     Q_INVOKABLE void cacheLangPage(QQuickItem *langPage);
     Q_INVOKABLE QQuickItem *cachedLangPage();
-    Q_INVOKABLE QString toGlibcLocale(const QString &lang) const;
+    Q_INVOKABLE static QString toGlibcLocale(const QString &lang);
 Q_SIGNALS:
     void takeEffectNextTime();
     void startGenerateLocale();

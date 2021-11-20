@@ -63,7 +63,7 @@ public:
 
     Q_INVOKABLE void move(int from, int to);
     Q_INVOKABLE void remove(int index);
-    Q_INVOKABLE void addLanguages(const QStringList &langs);
+    Q_INVOKABLE void addLanguage(const QString &lang);
 
 private:
     void saveLanguages();

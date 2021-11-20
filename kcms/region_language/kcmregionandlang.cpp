@@ -117,7 +117,7 @@ QQuickItem *KCMRegionAndLang::cachedLangPage()
 {
     return m_langPage;
 }
-QString KCMRegionAndLang::toGlibcLocale(const QString &lang) const
+QString KCMRegionAndLang::toGlibcLocale(const QString &lang)
 {
     static std::unordered_map<QString, QString> KDELocaleToGlibcLocale = {
         {QStringLiteral("sv"), QStringLiteral("sv_SE.UTF-8")},           {QStringLiteral("sk"), QStringLiteral("sk_SK.UTF-8")},

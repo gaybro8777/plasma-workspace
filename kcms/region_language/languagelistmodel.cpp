@@ -21,6 +21,7 @@ LanguageListModel::LanguageListModel(QObject *parent)
     auto langs = KLocalizedString::availableDomainTranslations("plasmashell").values();
     langs.sort();
     m_availableLanguages = std::move(langs);
+    m_index = -1;
 }
 
 int LanguageListModel::rowCount(const QModelIndex &parent) const
@@ -137,13 +138,6 @@ void LanguageListModel::setRegionAndLangSettings(QObject *settings)
     if (RegionAndLangSettings *regionandlangsettings = dynamic_cast<RegionAndLangSettings *>(settings)) {
         m_settings = regionandlangsettings;
         m_selectedLanguageModel->setRegionAndLangSettings(regionandlangsettings);
-        auto index = std::find_if(m_availableLanguages.begin(), m_availableLanguages.end(), [this](const QString &lang) {
-            return m_settings->lang().startsWith(lang);
-        });
-        if (index != m_availableLanguages.end()) {
-            m_index = std::distance(m_availableLanguages.begin(), index);
-            Q_EMIT currentIndexChanged();
-        }
         Q_EMIT exampleChanged();
     }
 }
@@ -174,14 +168,18 @@ SelectedLanguageModel::SelectedLanguageModel(LanguageListModel *parent)
 int SelectedLanguageModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_selectedLanguages.size();
+    return m_selectedLanguages.size() + 1;
 }
 QVariant SelectedLanguageModel::data(const QModelIndex &index, int role) const
 {
     Q_UNUSED(role)
     auto row = index.row();
-    if (row < 0 || row >= m_selectedLanguages.size()) {
-        return {};
+    if (row < 0 || row > m_selectedLanguages.size()) {
+        return QVariant();
+    }
+    // "add Language" Item
+    if (row == m_selectedLanguages.size()) {
+        return QVariant();
     }
 
     return LanguageListModel::languageCodeToName(m_selectedLanguages.at(row));
@@ -207,40 +205,40 @@ void SelectedLanguageModel::remove(int index)
     beginRemoveRows(QModelIndex(), index, index);
     m_selectedLanguages.removeAt(index);
     endRemoveRows();
+    saveLanguages();
 }
 
-void SelectedLanguageModel::addLanguages(const QStringList &langs)
+void SelectedLanguageModel::addLanguage(const QString &lang)
 {
-    if (langs.empty()) {
+    if (lang.isEmpty() || m_selectedLanguages.indexOf(lang) != -1) {
         return;
     }
-    QStringList unique_langs;
-    for (const auto &lang : langs) {
-        if (m_selectedLanguages.indexOf(lang) == -1) {
-            unique_langs.push_back(lang);
-        }
-    }
-    if (!unique_langs.empty()) {
-        beginInsertRows(QModelIndex(), m_selectedLanguages.size(), m_selectedLanguages.size() + unique_langs.size() - 1);
-        std::copy(unique_langs.begin(), unique_langs.end(), std::back_inserter(m_selectedLanguages));
-        endInsertRows();
-        saveLanguages();
-    }
+
+    beginInsertRows(QModelIndex(), m_selectedLanguages.size(), m_selectedLanguages.size());
+    m_selectedLanguages.push_back(lang);
+    endInsertRows();
+    saveLanguages();
 }
 
 void SelectedLanguageModel::saveLanguages()
 {
-    if (m_selectedLanguages.empty() || !m_settings) {
+    if (!m_settings) {
         return;
     }
-
-    QString languages;
-    for (auto i = m_selectedLanguages.begin(); i != m_selectedLanguages.end(); i++) {
-        languages.push_back(*i);
-        // no ':' at end
-        if (i + 1 != m_selectedLanguages.end()) {
-            languages.push_back(QLatin1Char(':'));
+    if (m_selectedLanguages.empty()) {
+        m_settings->setLang(m_settings->defaultLangValue());
+        m_settings->config()->group(QStringLiteral("Formats")).deleteEntry("lang");
+        m_settings->config()->group(QStringLiteral("Translations")).deleteEntry("language");
+    } else {
+        m_settings->setLang(KCMRegionAndLang::toGlibcLocale(m_selectedLanguages.front()));
+        QString languages;
+        for (auto i = m_selectedLanguages.begin(); i != m_selectedLanguages.end(); i++) {
+            languages.push_back(*i);
+            // no ':' at end
+            if (i + 1 != m_selectedLanguages.end()) {
+                languages.push_back(QLatin1Char(':'));
+            }
         }
+        m_settings->setLanguage(languages);
     }
-    m_settings->setLanguage(languages);
 }

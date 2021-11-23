@@ -41,7 +41,7 @@ KCM.ScrollViewKCM {
                     Kirigami.ListItemDragHandle {
                         listItem: listItem
                         listView: languageListView
-                        visible: languageListView.count > 1 && !isAddLangOption
+                        visible: languageListView.count > 2 && !isAddLangOption
                         onMoveRequested: {
                             languageListModel.selectedLanguageModel.move(oldIndex, newIndex);
                         }
@@ -60,14 +60,14 @@ KCM.ScrollViewKCM {
                 actions: [
                     Kirigami.Action {
                         enabled: index > 0
-                        visible: languageListView.count > 1 && !isAddLangOption
+                        visible: languageListView.count > 2 && !isAddLangOption
                         iconName: "go-top"
                         tooltip: i18nc("@info:tooltip", "Promote to default")
                         onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                     },
                     Kirigami.Action {
                         iconName: "edit-delete"
-                        visible: languageListView.count > 1 && !isAddLangOption
+                        visible: languageListView.count > 2 && !isAddLangOption
                         tooltip: i18nc("@info:tooltip", "Remove")
                         onTriggered: languageListModel.selectedLanguageModel.remove(index);
                     }]

@@ -34,11 +34,6 @@
    </group>
    <group name="Translations">
     <entry key="LANGUAGE" name="language" type="String">
-       <code>
-            auto language {QString::fromLocal8Bit(qgetenv("LANGUAGE"))};
-            language = language.isEmpty() ? i18n("Default") : language;
-       </code>
-       <default code="true">language</default>
     </entry>
   </group>
 </kcfg>

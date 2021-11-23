@@ -33,6 +33,29 @@ OptionsModel::OptionsModel(KCMRegionAndLang *parent)
     connect(m_settings, &RegionAndLangSettings::measurementChanged, this, [this] {
         Q_EMIT dataChanged(createIndex(4, 0), createIndex(4, 0), {Subtitle, Example});
     });
+
+    // initialize examples
+    QLocale lang = QLocale(m_settings->lang());
+    if (m_settings->numeric() == m_settings->defaultNumericValue()) {
+        m_numberExample = Utility::numericExample(lang);
+    } else {
+        m_numberExample = Utility::numericExample(QLocale(m_settings->numeric()));
+    }
+    if (m_settings->time() == m_settings->defaultTimeValue()) {
+        m_timeExample = Utility::timeExample(lang);
+    } else {
+        m_timeExample = Utility::timeExample(QLocale(m_settings->time()));
+    }
+    if (m_settings->measurement() == m_settings->defaultMeasurementValue()) {
+        m_measurementExample = Utility::measurementExample(lang);
+    } else {
+        m_measurementExample = Utility::measurementExample(QLocale(m_settings->measurement()));
+    }
+    if (m_settings->monetary() == m_settings->defaultMonetaryValue()) {
+        m_currencyExample = Utility::monetaryExample(lang);
+    } else {
+        m_currencyExample = Utility::monetaryExample(QLocale(m_settings->monetary()));
+    }
 }
 int OptionsModel::rowCount(const QModelIndex &parent) const
 {
@@ -69,13 +92,13 @@ QVariant OptionsModel::data(const QModelIndex &index, int role) const
         case 0:
             return QString();
         case 1:
-            return numberExample();
+            return m_numberExample;
         case 2:
-            return timeExample();
+            return m_timeExample;
         case 3:
-            return currencyExample();
+            return m_currencyExample;
         case 4:
-            return measurementExample();
+            return m_measurementExample;
         default:
             return QVariant();
         }
@@ -95,42 +118,21 @@ QHash<int, QByteArray> OptionsModel::roleNames() const
 void OptionsModel::handleLangChange()
 {
     Q_EMIT dataChanged(createIndex(0, 0), createIndex(0, 0), {Subtitle, Example});
-    QString defaultVal = i18n("Default");
-    if (m_settings->numeric() == defaultVal) {
+    QLocale lang = QLocale(m_settings->lang());
+    if (m_settings->numeric() == m_settings->defaultNumericValue()) {
+        m_numberExample = Utility::numericExample(lang);
         Q_EMIT dataChanged(createIndex(1, 0), createIndex(1, 0), {Subtitle, Example});
     }
-    if (m_settings->time() == defaultVal) {
+    if (m_settings->time() == m_settings->defaultTimeValue()) {
+        m_timeExample = Utility::timeExample(lang);
         Q_EMIT dataChanged(createIndex(2, 0), createIndex(2, 0), {Subtitle, Example});
     }
-    if (m_settings->measurement() == defaultVal) {
+    if (m_settings->measurement() == m_settings->defaultMeasurementValue()) {
+        m_measurementExample = Utility::measurementExample(lang);
         Q_EMIT dataChanged(createIndex(3, 0), createIndex(3, 0), {Subtitle, Example});
     }
-    if (m_settings->monetary() == defaultVal) {
+    if (m_settings->monetary() == m_settings->defaultMonetaryValue()) {
+        m_currencyExample = Utility::monetaryExample(lang);
         Q_EMIT dataChanged(createIndex(4, 0), createIndex(4, 0), {Subtitle, Example});
-    }
-}
-
-QString OptionsModel::numberExample() const
-{
-    return Utility::numericExample(localeWithDefault(m_settings->numeric()));
-}
-QString OptionsModel::timeExample() const
-{
-    return Utility::timeExample(localeWithDefault(m_settings->time()));
-}
-QString OptionsModel::currencyExample() const
-{
-    return Utility::monetaryExample(localeWithDefault(m_settings->monetary()));
-}
-QString OptionsModel::measurementExample() const
-{
-    return Utility::measurementExample(localeWithDefault(m_settings->measurement()));
-}
-QLocale OptionsModel::localeWithDefault(const QString &val) const
-{
-    if (val != i18n("Default")) {
-        return QLocale(val);
-    } else {
-        return QLocale(m_settings->lang());
     }
 }

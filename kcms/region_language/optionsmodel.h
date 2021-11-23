@@ -24,11 +24,11 @@ public Q_SLOTS:
     void handleLangChange();
 
 private:
-    QString numberExample() const;
-    QString timeExample() const;
-    QString currencyExample() const;
-    QString measurementExample() const;
-    QLocale localeWithDefault(const QString &val) const;
+    QString m_numberExample;
+    QString m_timeExample;
+    QString m_currencyExample;
+    QString m_measurementExample;
+
     std::array<std::pair<QString, QString>, 5> m_staticNames; // title, page
 
     RegionAndLangSettings *m_settings;

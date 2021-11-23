@@ -147,9 +147,9 @@ void SelectedLanguageModel::setRegionAndLangSettings(RegionAndLangSettings *sett
     m_settings = settings;
 
     beginResetModel();
-    if (m_settings->language() == m_settings->defaultLanguageValue() && m_settings->lang() != m_settings->defaultLangValue()) {
+    if (m_settings->language().isEmpty() && m_settings->lang() != m_settings->defaultLangValue()) {
         m_selectedLanguages = {m_settings->lang()};
-    } else {
+    } else if (!m_settings->language().isEmpty()) {
         m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
     }
     endResetModel();

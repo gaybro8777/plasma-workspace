@@ -224,10 +224,17 @@ int PanelView::thickness() const
 }
 
 int PanelView::totalThickness() const {
-    if (formFactor() == Plasma::Types::Horizontal) {
-        return thickness() + m_bottomFloatingPadding + m_topFloatingPadding;
-    } else {
-        return thickness() + m_leftFloatingPadding + m_rightFloatingPadding;
+    switch (containment()->location()) {
+    case Plasma::Types::TopEdge:
+        return thickness() + m_topFloatingPadding;
+    case Plasma::Types::LeftEdge:
+        return thickness() + m_leftFloatingPadding;
+    case Plasma::Types::RightEdge:
+        return thickness() + m_rightFloatingPadding;
+    case Plasma::Types::BottomEdge:
+        return thickness() + m_bottomFloatingPadding;
+    default:
+        return thickness();
     }
 }
 

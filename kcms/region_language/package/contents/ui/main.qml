@@ -54,6 +54,9 @@ KCM.ScrollViewKCM {
 
             text: i18nc("@info", "Necessary locale and language packages have been installed. It is now safe to turn off the computer.")
         }
+        QQC2.Label {
+            text: i18n("Language will also be used for formats settings.")
+        }
     }
 
     Connections {

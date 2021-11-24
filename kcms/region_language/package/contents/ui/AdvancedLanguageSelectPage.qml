@@ -77,6 +77,10 @@ KCM.ScrollViewKCM {
         id: languageListView
         model: languageListModel.selectedLanguageModel
         delegate: languagesListItemComponent
+        Kirigami.PlaceholderMessage {
+            anchors.centerIn: parent
+            text: i18n("There is no language config at Plasma level")
+        }
     }
 
     Component {

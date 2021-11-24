@@ -17,10 +17,44 @@ KCM.ScrollViewKCM {
     id: root
     implicitHeight: Kirigami.Units.gridUnit * 40
     implicitWidth: Kirigami.Units.gridUnit * 20
-    header: Kirigami.InlineMessage {
+    header: ColumnLayout {
+        id: messagesLayout
+
+        spacing: Kirigami.Units.largeSpacing
+
+        Kirigami.InlineMessage {
             id: takeEffectNextTimeMsg
-            text: i18n("Your changes will take effect the next time you log in.\n\nGenerating Locales; don't turn off the computer yet.")
+            Layout.fillWidth: true
+
+            type: Kirigami.MessageType.Information
+
+            text: i18nc("@info", "Your changes will take effect the next time you log in.\n\nGenerating Locales; don't turn off the computer yet.")
         }
+        Kirigami.InlineMessage {
+            id: installFontMsg
+            Layout.fillWidth: true
+
+            type: Kirigami.MessageType.Information
+
+            text: i18nc("@info", "Locales have been generated, but you may want to install fonts yourself")
+        }
+        Kirigami.InlineMessage {
+            id: manualInstallMsg
+            Layout.fillWidth: true
+
+            type: Kirigami.MessageType.Error
+
+            text: i18nc("@info", "Failed to generate locales. You should enable it and install font packages")
+        }
+        Kirigami.InlineMessage {
+            id: installSuccessMsg
+            Layout.fillWidth: true
+
+            type: Kirigami.MessageType.Positive
+
+            text: i18nc("@info", "Necessary locale and language packages have been installed. It is now safe to turn off the computer.")
+        }
+    }
 
     Connections {
         target: kcm
@@ -28,13 +62,13 @@ KCM.ScrollViewKCM {
             takeEffectNextTimeMsg.visible = true;
         }
         function onRequireInstallFont() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Locales have been generated, but you may want to install fonts yourself");
+            installFontMsg.visible = true;
         }
         function onAllManual() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Failed to generate locales. You should enable it and install font packages");
+            installFontMsg.visible = true;
         }
         function onGenerateFinished() {
-            takeEffectNextTimeMsg.text += "\n" + i18n("Necessary locale and language packages have been installed. It is now safe to turn off the computer.");
+            installSuccessMsg.visible = true;
         }
     }
 

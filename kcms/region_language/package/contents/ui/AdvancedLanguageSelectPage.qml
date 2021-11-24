@@ -30,7 +30,6 @@ KCM.ScrollViewKCM {
     Component {
         id: languagesListItemComponent
         Item {
-            property bool isAddLangOption: index === languageListView.count - 1
             width: ListView.view.width
             height: listItem.implicitHeight
 
@@ -41,7 +40,7 @@ KCM.ScrollViewKCM {
                     Kirigami.ListItemDragHandle {
                         listItem: listItem
                         listView: languageListView
-                        visible: languageListView.count > 2 && !isAddLangOption
+                        visible: languageListView.count > 1
                         onMoveRequested: {
                             languageListModel.selectedLanguageModel.move(oldIndex, newIndex);
                         }
@@ -51,31 +50,26 @@ KCM.ScrollViewKCM {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
 
-                        text: isAddLangOption ? i18n("add Language") : model.display
+                        text: model.display
 
-                        color: isAddLangOption ? Kirigami.Theme.activeTextColor : (listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate)) ? listItem.activeTextColor : listItem.textColor;
+                        color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor;
                     }
                 }
 
                 actions: [
                     Kirigami.Action {
                         enabled: index > 0
-                        visible: languageListView.count > 2 && !isAddLangOption
+                        visible: languageListView.count > 1
                         iconName: "go-top"
                         tooltip: i18nc("@info:tooltip", "Promote to default")
                         onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                     },
                     Kirigami.Action {
                         iconName: "edit-delete"
-                        visible: languageListView.count > 2 && !isAddLangOption
+                        visible: languageListView.count > 1
                         tooltip: i18nc("@info:tooltip", "Remove")
                         onTriggered: languageListModel.selectedLanguageModel.remove(index);
                     }]
-                onClicked: {
-                    if (isAddLangOption) {
-                        addLanguagesSheet.open();
-                    }
-                }
             }
         }
     }
@@ -123,6 +117,17 @@ KCM.ScrollViewKCM {
         }
     }
     footer: ColumnLayout {
+        QQC2.Button {
+            Layout.alignment: Qt.AlignRight
+            enabled: availableLanguagesList.count
+
+            text: i18nc("@action:button", "Add languages…")
+
+            onClicked: addLanguagesSheet.sheetOpen = !addLanguagesSheet.sheetOpen
+
+            checkable: true
+            checked: addLanguagesSheet.sheetOpen
+        }
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             QQC2.Label {
@@ -141,22 +146,6 @@ KCM.ScrollViewKCM {
         QQC2.Label {
             Layout.alignment: Qt.AlignHCenter
             text: languageListModel.timeExample
-        }
-        RowLayout {
-            id: footerLayout
-
-            QQC2.Button {
-                Layout.alignment: Qt.AlignRight
-
-                enabled: availableLanguagesList.count
-
-                text: i18nc("@action:button", "Add languages…")
-
-                onClicked: addLanguagesSheet.sheetOpen = !addLanguagesSheet.sheetOpen
-
-                checkable: true
-                checked: addLanguagesSheet.sheetOpen
-            }
         }
     }
 }

@@ -168,7 +168,7 @@ SelectedLanguageModel::SelectedLanguageModel(LanguageListModel *parent)
 int SelectedLanguageModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_selectedLanguages.size() + 1;
+    return m_selectedLanguages.size();
 }
 QVariant SelectedLanguageModel::data(const QModelIndex &index, int role) const
 {

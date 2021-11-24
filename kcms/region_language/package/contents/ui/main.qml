@@ -78,8 +78,18 @@ KCM.ScrollViewKCM {
     view: ListView {
         model: kcm.optionsModel
         delegate: Kirigami.BasicListItem {
-            text: model.name + " - " + model.localeName
-            subtitle: model.example
+            text: model.name
+            subtitle: {
+                if (model.page === "lang") {
+                    return model.localeName;
+                }
+
+                if (model.localeName) {
+                    return model.example + i18n(" (Formats for %1)", model.localeName);
+                } else {
+                    return model.example;
+                }
+            }
             reserveSpaceForSubtitle: true
             onClicked: {
                 while (kcm.depth !== 1) {

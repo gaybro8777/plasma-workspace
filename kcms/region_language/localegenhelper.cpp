@@ -39,14 +39,13 @@ void LocaleGenHelper::enableLocales(const QStringList &locales)
     if (m_timer->isActive()) {
         m_timer->stop();
     }
-    if (m_isGenerating || !validateLocales()) {
+    if (m_isGenerating || !validateLocales(locales)) {
         Q_EMIT success(false);
         exitAfterTimeOut();
         return;
     }
     m_isGenerating = true;
-    if (shouldGenerate(locales)) {
-        m_locales = locales;
+    if (shouldGenerate()) {
         m_authority->checkAuthorization(QStringLiteral("org.kde.localegenhelper.enableLocales"),
                                         PolkitQt1::SystemBusNameSubject(message().service()),
                                         PolkitQt1::Authority::AllowUserInteraction);
@@ -64,7 +63,7 @@ void LocaleGenHelper::enableLocalesPrivate(PolkitQt1::Authority::Result result)
         exitAfterTimeOut();
     }
 }
-bool LocaleGenHelper::shouldGenerate(const QStringList &locales)
+bool LocaleGenHelper::shouldGenerate()
 {
     QFile localegen(QStringLiteral("/etc/locale.gen"));
     if (!localegen.open(QIODevice::ReadOnly)) {
@@ -87,7 +86,10 @@ bool LocaleGenHelper::shouldGenerate(const QStringList &locales)
             m_alreadyEnabled.insert(localeNameWithoutCharset);
         }
     }
-    for (const auto &locale : locales) {
+    for (const auto &locale : std::as_const(m_locales)) {
+        if (locale == QStringLiteral("C")) {
+            continue;
+        }
         if (m_alreadyEnabled.count(locale) == 0) {
             return true;
         }
@@ -99,7 +101,7 @@ bool LocaleGenHelper::editLocaleGen()
     QFile localegen(QStringLiteral("/etc/locale.gen"));
     localegen.open(QIODevice::Append);
     for (const auto &locale : std::as_const(m_locales)) {
-        if (m_alreadyEnabled.count(locale)) {
+        if (m_alreadyEnabled.count(locale) || locale == QStringLiteral("C")) {
             continue;
         } else {
             // start at newline first time
@@ -134,16 +136,20 @@ void LocaleGenHelper::exitAfterTimeOut()
     m_timer->start(30 * 1000);
 }
 
-bool LocaleGenHelper::validateLocales()
+bool LocaleGenHelper::validateLocales(const QStringList &locales)
 {
-    m_locales.removeDuplicates();
-    for (auto &locale : m_locales) {
+    QStringList processedLocales = locales;
+    for (auto &locale : processedLocales) {
         locale.remove(QStringLiteral(".UTF-8"));
+        if (locale == QStringLiteral("C")) {
+            continue;
+        }
         auto result = m_regex.match(locale);
         if (!result.hasMatch()) {
             return false;
         }
     }
+    m_locales = std::move(processedLocales);
     return true;
 }
 int main(int argc, char *argv[])

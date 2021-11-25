@@ -22,9 +22,20 @@ KCM.ScrollViewKCM {
             languageListModel.setRegionAndLangSettings(kcm.settings);
         }
     }
-    header: QQC2.Label {
-        horizontalAlignment: Qt.AlignHCenter
-        text: i18n("The first language will also be used for formats settings \n languages on the top will be used first if Apps support it")
+    header: ColumnLayout {
+        spacing: Kirigami.Units.largeSpacing
+
+        Kirigami.InlineMessage {
+            text: i18n("Adding more than two languages will have undesired behavior on some applications")
+            Layout.fillWidth: true
+            type: Kirigami.MessageType.Warning
+            visible: languageListView.count > 1
+        }
+
+        QQC2.Label {
+            horizontalAlignment: Qt.AlignHCenter
+            text: i18n("The first language will also be used for formats settings \n languages on the top will be used first if Apps support it")
+        }
     }
 
     Component {

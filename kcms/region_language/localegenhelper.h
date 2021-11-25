@@ -32,8 +32,8 @@ private Q_SLOTS:
 private:
     bool editLocaleGen();
     void exitAfterTimeOut();
-    bool shouldGenerate(const QStringList &locales);
-    bool validateLocales();
+    bool shouldGenerate();
+    bool validateLocales(const QStringList &locales);
 
     std::atomic<bool> m_isGenerating = false;
     bool m_comment = false;

@@ -20,6 +20,7 @@ LanguageListModel::LanguageListModel(QObject *parent)
 {
     auto langs = KLocalizedString::availableDomainTranslations("plasmashell").values();
     langs.sort();
+    langs.push_front(QStringLiteral("C"));
     m_availableLanguages = std::move(langs);
     m_index = -1;
 }

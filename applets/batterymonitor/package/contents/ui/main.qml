@@ -228,7 +228,7 @@ Item {
 
         property int cookie1: -1
         property int cookie2: -1
-        onPowermanagementChanged: {
+        onPowermanagementChanged: disabled => {
             var service = pmSource.serviceForSource("PowerDevil");
             if (disabled) {
                 var reason = i18n("The battery applet has enabled system-wide inhibition");
@@ -238,12 +238,12 @@ Item {
                 op2.reason = reason;
 
                 var job1 = service.startOperationCall(op1);
-                job1.finished.connect(function(job) {
+                job1.finished.connect(job => {
                     cookie1 = job.result;
                 });
 
                 var job2 = service.startOperationCall(op2);
-                job2.finished.connect(function(job) {
+                job2.finished.connect(job => {
                     cookie2 = job.result;
                 });
             } else {
@@ -253,12 +253,12 @@ Item {
                 op2.cookie = cookie2;
 
                 var job1 = service.startOperationCall(op1);
-                job1.finished.connect(function(job) {
+                job1.finished.connect(job => {
                     cookie1 = -1;
                 });
 
                 var job2 = service.startOperationCall(op2);
-                job2.finished.connect(function(job) {
+                job2.finished.connect(job => {
                     cookie2 = -1;
                 });
             }
@@ -277,7 +277,7 @@ Item {
             op.profile = profile;
 
             let job = service.startOperationCall(op);
-            job.finished.connect((job) => {
+            job.finished.connect(job => {
                 dialogItem.activeProfile = Qt.binding(() => actuallyActiveProfile)
                 if (!job.result) {
                     var notifications = notificationSource.serviceForSource("notification")

@@ -38,7 +38,8 @@ ColumnLayout {
 
         InhibitionHint {
             Layout.fillWidth: true
-            visible: pmSource.data["PowerDevil"] && pmSource.data["PowerDevil"]["Is Lid Present"] && !pmSource.data["PowerDevil"]["Triggers Lid Action"] ? true : false
+            // don't let the `undefined` value slip into a property, effectively triggering a reset
+            visible: Boolean(pmSource.data["PowerDevil"] && pmSource.data["PowerDevil"]["Is Lid Present"] && !pmSource.data["PowerDevil"]["Triggers Lid Action"])
             iconSource: "computer-laptop"
             text: i18nc("Minimize the length of this string as much as possible", "Your notebook is configured not to sleep when closing the lid while an external monitor is connected.")
         }

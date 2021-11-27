@@ -271,21 +271,21 @@ Item {
         }
 
         onActivateProfileRequested: {
-            dialogItem.activeProfile = profile
+            dialogItem.activeProfile = profile;
             const service = pmSource.serviceForSource("PowerDevil");
-            let op = service.operationDescription("setPowerProfile");
+            const op = service.operationDescription("setPowerProfile");
             op.profile = profile;
 
-            let job = service.startOperationCall(op);
+            const job = service.startOperationCall(op);
             job.finished.connect(job => {
-                dialogItem.activeProfile = Qt.binding(() => actuallyActiveProfile)
+                dialogItem.activeProfile = Qt.binding(() => actuallyActiveProfile);
                 if (!job.result) {
-                    var notifications = notificationSource.serviceForSource("notification")
-                    var operation = notifications.operationDescription("createNotification");
-                    operation.appName = i18n("Battery and Brightness")
+                    const notifications = notificationSource.serviceForSource("notification")
+                    const operation = notifications.operationDescription("createNotification");
+                    operation.appName = i18n("Battery and Brightness");
                     operation.appIcon = "dialog-error";
-                    operation.icon = "dialog-error"
-                    operation.body = i18n("Failed to activate %1 mode", profile)
+                    operation.icon = "dialog-error";
+                    operation.body = i18n("Failed to activate %1 mode", profile);
                     notifications.startOperationCall(operation);
                 }
             });

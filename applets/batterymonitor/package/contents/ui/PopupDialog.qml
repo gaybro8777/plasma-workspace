@@ -6,6 +6,7 @@
 */
 
 import QtQuick 2.15
+import QtQuick.Layouts 1.15
 
 import org.kde.kquickcontrolsaddons 2.1
 import org.kde.plasma.components 3.0 as PlasmaComponents3
@@ -46,19 +47,18 @@ PlasmaComponents3.Page {
 
     FocusScope {
         anchors.fill: parent
-        anchors.topMargin: PlasmaCore.Units.smallSpacing * 2
-
         focus: true
 
-        Column {
-            id: settingsColumn
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width - PlasmaCore.Units.smallSpacing * 2
-            spacing: Math.round(PlasmaCore.Units.gridUnit / 2)
+
+        ColumnLayout {
+            anchors {
+                fill: parent
+                margins: PlasmaCore.Units.smallSpacing * 2
+            }
+            spacing: PlasmaCore.Units.smallSpacing * 2
 
             BrightnessItem {
                 id: brightnessSlider
-                width: parent.width
 
                 icon: "video-display-brightness"
                 label: i18n("Display Brightness")
@@ -82,7 +82,6 @@ PlasmaComponents3.Page {
 
             BrightnessItem {
                 id: keyboardBrightnessSlider
-                width: parent.width
 
                 icon: "input-keyboard-brightness"
                 label: i18n("Keyboard Brightness")
@@ -105,7 +104,6 @@ PlasmaComponents3.Page {
             }
 
             PowerProfileItem {
-                width: parent.width
                 activeProfile: dialog.activeProfile
                 inhibitionReason: dialog.inhibitionReason
                 visible: dialog.profiles.length > 0
@@ -113,32 +111,35 @@ PlasmaComponents3.Page {
                 profileHolds: dialog.profileHolds
                 onActivateProfileRequested: dialog.activateProfileRequested(profile)
             }
-        }
 
-        PlasmaComponents3.ScrollView {
-            // HACK: workaround for https://bugreports.qt.io/browse/QTBUG-83890
-            PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: settingsColumn.bottom
-                topMargin: PlasmaCore.Units.gridUnit
-                leftMargin: PlasmaCore.Units.smallSpacing
-                bottom: parent.bottom
-            }
-            width: parent.width - PlasmaCore.Units.smallSpacing * 2
+            PlasmaComponents3.ScrollView {
+                id: batteryScrollView
 
-            ListView {
-                id: batteryList
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                boundsBehavior: Flickable.StopAtBounds
-                spacing: Math.round(PlasmaCore.Units.gridUnit / 2)
+                // HACK: workaround for https://bugreports.qt.io/browse/QTBUG-83890
+                PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
 
-                KeyNavigation.tab: brightnessSlider
-                KeyNavigation.backtab: pmSwitch
+                ListView {
+                    id: batteryList
 
-                delegate: BatteryItem {
-                    width: ListView.view.width
-                    battery: model
+                    boundsBehavior: Flickable.StopAtBounds
+                    spacing: PlasmaCore.Units.smallSpacing * 2
+
+                    KeyNavigation.tab: brightnessSlider
+                    KeyNavigation.backtab: pmSwitch
+
+                    delegate: BatteryItem {
+                        width: {
+                            const scrollBar = batteryScrollView.PlasmaComponents3.ScrollBar.vertical;
+                            const hasScrollBar = scrollBar !== null && scrollBar.visible;
+                            // add spacing between an item and the scroll bar
+                            return ListView.view.width
+                                - (hasScrollBar ? PlasmaCore.Units.smallSpacing * 2 : 0);
+                        }
+                        battery: model
+                    }
                 }
             }
         }

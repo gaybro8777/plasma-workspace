@@ -78,25 +78,27 @@ QVariant OptionsModel::data(const QModelIndex &index, int role) const
     case Subtitle: {
         switch (row) {
         case 0:
-            if (m_settings->lang() != m_settings->defaultLangValue()) {
-                return m_settings->lang();
-            }
+            return m_settings->lang();
         case 1:
             if (m_settings->numeric() != m_settings->defaultNumericValue()) {
                 return m_settings->numeric();
             }
+            break;
         case 2:
             if (m_settings->time() != m_settings->defaultTimeValue()) {
                 return m_settings->time();
             }
+            break;
         case 3:
             if (m_settings->monetary() != m_settings->defaultMonetaryValue()) {
                 return m_settings->monetary();
             }
+            break;
         case 4:
             if (m_settings->measurement() != m_settings->defaultMeasurementValue()) {
                 return m_settings->measurement();
             }
+            break;
         default:
             return QVariant();
         }

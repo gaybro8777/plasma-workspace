@@ -12,6 +12,8 @@
             QString lang = QString::fromLocal8Bit(qgetenv("LANG"));
             if (lang.isEmpty()) {
                 lang = i18n("System Default");
+            } else {
+                lang = i18n("%1 - From Environment", lang);
             }
         </code>
         <default code="true">lang</default>

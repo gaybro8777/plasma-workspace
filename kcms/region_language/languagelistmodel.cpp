@@ -30,6 +30,14 @@ int LanguageListModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent)
     return m_availableLanguages.size();
 }
+QString LanguageListModel::envLang() const
+{
+    return qgetenv("LANG");
+}
+QString LanguageListModel::envLanguage() const
+{
+    return qgetenv("LANGUAGE");
+}
 QVariant LanguageListModel::data(const QModelIndex &index, int role) const
 {
     auto row = index.row();

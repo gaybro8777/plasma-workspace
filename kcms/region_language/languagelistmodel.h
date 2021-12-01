@@ -34,6 +34,8 @@ public:
     QString timeExample() const;
     QString metric() const;
 
+    Q_INVOKABLE QString envLang() const;
+    Q_INVOKABLE QString envLanguage() const;
     Q_INVOKABLE void setRegionAndLangSettings(QObject *settings);
 Q_SIGNALS:
     void currentIndexChanged();

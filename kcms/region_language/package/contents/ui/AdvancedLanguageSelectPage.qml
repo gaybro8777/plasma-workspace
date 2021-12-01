@@ -26,7 +26,7 @@ KCM.ScrollViewKCM {
         spacing: Kirigami.Units.largeSpacing
 
         Kirigami.InlineMessage {
-            text: i18n("Adding more than two languages will have undesired behavior on some applications")
+            text: i18n("Adding more than one languages will have undesired behavior on some applications")
             Layout.fillWidth: true
             type: Kirigami.MessageType.Warning
             visible: languageListView.count > 1
@@ -90,7 +90,23 @@ KCM.ScrollViewKCM {
         delegate: languagesListItemComponent
         Kirigami.PlaceholderMessage {
             anchors.centerIn: parent
-            text: i18n("There is no language config at Plasma level")
+            visible: languageListView.count === 0
+            text: {
+                const lang = languageListModel.envLang();
+                const language = languageListModel.envLanguage();
+                let description = i18n("There is no language config at Plasma level");
+                if (lang.length || language.length) {
+                    description += i18n("\nInherited from environment: ");
+                }
+
+                if (lang.length) {
+                    description += i18nc("environment variable name", "LANG=%1", lang);
+                }
+                if (language.length) {
+                    description += i18nc("environment variable name", "LANGUAGE=%1", language);
+                }
+                return description;
+            }
         }
     }
 

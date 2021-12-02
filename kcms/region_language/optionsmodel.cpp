@@ -144,12 +144,12 @@ void OptionsModel::handleLangChange()
         m_timeExample = Utility::timeExample(lang);
         Q_EMIT dataChanged(createIndex(2, 0), createIndex(2, 0), {Subtitle, Example});
     }
-    if (m_settings->measurement() == m_settings->defaultMeasurementValue()) {
-        m_measurementExample = Utility::measurementExample(lang);
-        Q_EMIT dataChanged(createIndex(3, 0), createIndex(3, 0), {Subtitle, Example});
-    }
     if (m_settings->monetary() == m_settings->defaultMonetaryValue()) {
         m_currencyExample = Utility::monetaryExample(lang);
+        Q_EMIT dataChanged(createIndex(3, 0), createIndex(3, 0), {Subtitle, Example});
+    }
+    if (m_settings->measurement() == m_settings->defaultMeasurementValue()) {
+        m_measurementExample = Utility::measurementExample(lang);
         Q_EMIT dataChanged(createIndex(4, 0), createIndex(4, 0), {Subtitle, Example});
     }
 }

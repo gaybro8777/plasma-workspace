@@ -18,6 +18,8 @@ LanguageListModel::LanguageListModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_selectedLanguageModel(new SelectedLanguageModel(this))
 {
+    connect(this, &LanguageListModel::isPreviewExampleChanged, this, &LanguageListModel::exampleChanged);
+    connect(m_selectedLanguageModel, &SelectedLanguageModel::exampleChanged, this, &LanguageListModel::exampleChanged);
     auto langs = KLocalizedString::availableDomainTranslations("plasmashell").values();
     langs.sort();
     langs.push_front(QStringLiteral("C"));
@@ -111,11 +113,23 @@ void LanguageListModel::setCurrentIndex(int index)
 
 QString LanguageListModel::exampleHelper(std::function<QString(const QLocale &)> func) const
 {
-    if (m_settings) {
-        if (m_index < 0) {
-            return func(QLocale(m_settings->lang()));
+    static auto getLangWithDefault = [this] {
+        QString defaultLang = m_settings->defaultLangValue();
+        if (m_settings->lang() != defaultLang) {
+            return QLocale(m_settings->lang());
         } else {
-            return func(QLocale(m_availableLanguages[m_index]));
+            return QLocale::system();
+        }
+    };
+    if (m_settings) {
+        if (m_isPreviewExample) {
+            if (m_index < 0) {
+                return func(getLangWithDefault());
+            } else {
+                return func(QLocale(m_availableLanguages[m_index]));
+            }
+        } else {
+            return func(getLangWithDefault());
         }
     } else {
         return QString();
@@ -149,6 +163,14 @@ void LanguageListModel::setRegionAndLangSettings(QObject *settings)
         m_selectedLanguageModel->setRegionAndLangSettings(regionandlangsettings);
         Q_EMIT exampleChanged();
     }
+}
+bool LanguageListModel::isPreviewExample() const
+{
+    return m_isPreviewExample;
+}
+void LanguageListModel::setIsPreviewExample(bool preview)
+{
+    m_isPreviewExample = preview;
 }
 
 void SelectedLanguageModel::setRegionAndLangSettings(RegionAndLangSettings *settings)
@@ -204,6 +226,7 @@ void SelectedLanguageModel::move(int from, int to)
     m_selectedLanguages.move(from, to);
     endResetModel();
     saveLanguages();
+    Q_EMIT exampleChanged();
 }
 
 void SelectedLanguageModel::remove(int index)
@@ -215,6 +238,7 @@ void SelectedLanguageModel::remove(int index)
     m_selectedLanguages.removeAt(index);
     endRemoveRows();
     saveLanguages();
+    Q_EMIT exampleChanged();
 }
 
 void SelectedLanguageModel::addLanguage(const QString &lang)
@@ -227,6 +251,7 @@ void SelectedLanguageModel::addLanguage(const QString &lang)
     m_selectedLanguages.push_back(lang);
     endInsertRows();
     saveLanguages();
+    Q_EMIT exampleChanged();
 }
 
 void SelectedLanguageModel::saveLanguages()

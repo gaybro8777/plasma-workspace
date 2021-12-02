@@ -4,6 +4,8 @@
 
     SPDX-License-Identifier: GPL-2.0-or-later
 */
+#include <QLocale>
+
 #include <KLocalizedString>
 
 #include "exampleutility.cpp"
@@ -68,6 +70,9 @@ int OptionsModel::rowCount(const QModelIndex &parent) const
 }
 QVariant OptionsModel::data(const QModelIndex &index, int role) const
 {
+    static auto getNativeName = [](const QString &locale) {
+        return QLocale(locale).nativeLanguageName();
+    };
     const int row = index.row();
     if (row < 0 || row >= (int)m_staticNames.size())
         return QVariant();
@@ -78,25 +83,29 @@ QVariant OptionsModel::data(const QModelIndex &index, int role) const
     case Subtitle: {
         switch (row) {
         case 0:
-            return m_settings->lang();
+            if (m_settings->lang() != m_settings->defaultLangValue()) {
+                return getNativeName(m_settings->lang());
+            } else {
+                return m_settings->lang();
+            }
         case 1:
             if (m_settings->numeric() != m_settings->defaultNumericValue()) {
-                return m_settings->numeric();
+                return getNativeName(m_settings->numeric());
             }
             break;
         case 2:
             if (m_settings->time() != m_settings->defaultTimeValue()) {
-                return m_settings->time();
+                return getNativeName(m_settings->time());
             }
             break;
         case 3:
             if (m_settings->monetary() != m_settings->defaultMonetaryValue()) {
-                return m_settings->monetary();
+                return getNativeName(m_settings->monetary());
             }
             break;
         case 4:
             if (m_settings->measurement() != m_settings->defaultMeasurementValue()) {
-                return m_settings->measurement();
+                return getNativeName(m_settings->measurement());
             }
             break;
         default:

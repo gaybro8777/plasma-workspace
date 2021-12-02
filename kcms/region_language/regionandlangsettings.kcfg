@@ -5,6 +5,7 @@
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
   <include>QtGlobal</include>
   <include>KLocalizedString</include>
+  <include>QLocale</include>
   <kcfgfile name="plasma-localerc" />
   <group name="Formats">
     <entry key="LANG" name="lang" type="String">
@@ -13,7 +14,7 @@
             if (lang.isEmpty()) {
                 lang = i18n("System Default");
             } else {
-                lang = i18n("%1 - From Environment", lang);
+                lang = i18n("%1 - From Environment", QLocale(lang).nativeLanguageName());
             }
         </code>
         <default code="true">lang</default>

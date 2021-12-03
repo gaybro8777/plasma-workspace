@@ -91,22 +91,7 @@ KCM.ScrollViewKCM {
         Kirigami.PlaceholderMessage {
             anchors.centerIn: parent
             visible: languageListView.count === 0
-            text: {
-                const lang = languageListModel.envLang();
-                const language = languageListModel.envLanguage();
-                let description = i18n("There is no language config at Plasma level");
-                if (lang.length || language.length) {
-                    description += i18n("\nInherited from environment: ");
-                }
-
-                if (lang.length) {
-                    description += i18nc("environment variable name", "LANG=%1", lang);
-                }
-                if (language.length) {
-                    description += i18nc("environment variable name", "LANGUAGE=%1", language);
-                }
-                return description;
-            }
+            text: i18n("No Language Configured")
         }
     }
 

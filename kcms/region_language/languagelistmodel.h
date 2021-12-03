@@ -39,8 +39,6 @@ public:
     bool isPreviewExample() const;
     void setIsPreviewExample(bool preview);
 
-    Q_INVOKABLE QString envLang() const;
-    Q_INVOKABLE QString envLanguage() const;
     Q_INVOKABLE void setRegionAndLangSettings(QObject *settings);
 Q_SIGNALS:
     void currentIndexChanged();
@@ -77,6 +75,8 @@ Q_SIGNALS:
     void exampleChanged();
 
 private:
+    QString envLang() const;
+    QString envLanguage() const;
     void saveLanguages();
     RegionAndLangSettings *m_settings{nullptr};
     QList<QString> m_selectedLanguages;

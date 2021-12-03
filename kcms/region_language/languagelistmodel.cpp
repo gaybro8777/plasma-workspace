@@ -32,14 +32,6 @@ int LanguageListModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent)
     return m_availableLanguages.size();
 }
-QString LanguageListModel::envLang() const
-{
-    return qgetenv("LANG");
-}
-QString LanguageListModel::envLanguage() const
-{
-    return qgetenv("LANGUAGE");
-}
 QVariant LanguageListModel::data(const QModelIndex &index, int role) const
 {
     auto row = index.row();
@@ -179,9 +171,20 @@ void SelectedLanguageModel::setRegionAndLangSettings(RegionAndLangSettings *sett
 
     beginResetModel();
     if (m_settings->language().isEmpty() && m_settings->lang() != m_settings->defaultLangValue()) {
+        // no language but have lang
         m_selectedLanguages = {m_settings->lang()};
     } else if (!m_settings->language().isEmpty()) {
+        // have language, ignore lang
         m_selectedLanguages = m_settings->language().split(QLatin1Char(':'));
+    } else {
+        // have nothing, figure out from env
+        QString lang = envLang();
+        QString language = envLanguage();
+        if (!language.isEmpty()) {
+            m_selectedLanguages = language.split(QLatin1Char(':'));
+        } else if (!lang.isEmpty()) {
+            m_selectedLanguages = {lang};
+        }
     }
     endResetModel();
 }
@@ -275,4 +278,12 @@ void SelectedLanguageModel::saveLanguages()
         }
         m_settings->setLanguage(languages);
     }
+}
+QString SelectedLanguageModel::envLang() const
+{
+    return qgetenv("LANG");
+}
+QString SelectedLanguageModel::envLanguage() const
+{
+    return qgetenv("LANGUAGE");
 }

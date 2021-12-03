@@ -14,7 +14,7 @@
             if (lang.isEmpty()) {
                 lang = i18n("System Default");
             } else {
-                lang = i18n("%1 - From Environment", QLocale(lang).nativeLanguageName());
+                lang = QLocale(lang).nativeLanguageName();
             }
         </code>
         <default code="true">lang</default>

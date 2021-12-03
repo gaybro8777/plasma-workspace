@@ -41,7 +41,17 @@ OptionsModel::OptionsModel(KCMRegionAndLang *parent)
     });
 
     // initialize examples
-    QLocale lang = QLocale(m_settings->lang());
+    QString lang;
+    if (m_settings->lang() != m_settings->defaultLangValue()) {
+        lang = m_settings->lang();
+    } else {
+        QString envLang = qgetenv("LANG");
+        if (!envLang.isEmpty()) {
+            lang = envLang;
+        } else {
+            lang = QStringLiteral("C");
+        }
+    }
     if (m_settings->numeric() == m_settings->defaultNumericValue()) {
         m_numberExample = Utility::numericExample(lang);
     } else {

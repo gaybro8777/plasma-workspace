@@ -61,6 +61,9 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
         return flagIconPath;
     }
     case DisplayName: {
+        if (name == QStringLiteral("C")) {
+            return name;
+        }
         const QString clabel = !country.isEmpty() ? country : QLocale::countryToString(locale.country());
         if (!lang.isEmpty()) {
             return lang + QStringLiteral(" (") + clabel + QStringLiteral(")");

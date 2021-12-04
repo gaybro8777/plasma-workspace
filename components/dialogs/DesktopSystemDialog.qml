@@ -15,65 +15,24 @@ import "private" as Private
 /**
  * Dialog used on desktop. Uses SSDs (as opposed to CSDs).
  */
-Kirigami.AbstractApplicationWindow {
+Item {
     id: root
 
-    default property alias mainItem: contentsControl.contentItem
-
-    /**
-     * Main text of the dialog.
-     */
+    property string title: mainText
+    property alias mainItem: contentsControl.contentItem
     property alias mainText: titleHeading.text
-
-    /**
-     * Subtitle of the dialog.
-     */
     property alias subtitle: subtitleLabel.text
-
-    /**
-     * This property holds the icon used in the dialog.
-     */
     property alias iconName: icon.source
-
-    /**
-     * This property holds the list of actions for this dialog.
-     *
-     * Each action will be rendered as a button that the user will be able
-     * to click.
-     */
     property list<Kirigami.Action> actions
-    
-    /**
-     * This property holds the QQC2 DialogButtonBox used in the footer of the dialog.
-     */
     readonly property alias dialogButtonBox: footerButtonBox
 
-    /**
-     * Controls whether the accept button is enabled
-     */
-    property bool acceptable: true
+    property Window window
+    property real minimumHeight: column.Layout.minimumHeight
+    property real minimumWidth: column.Layout.minimumWidth
     
-    width: visible ? column.implicitWidth : 0
-    height: visible ? column.implicitHeight + footer.implicitHeight : 0
-    minimumHeight: column.Layout.minimumHeight + footer.implicitHeight
-    minimumWidth: Math.max(column.Layout.minimumWidth, footer.implicitWidth)
-    
-    flags: Qt.Dialog
-
-    visible: false
-
-    signal accept()
-    signal reject()
-    property bool accepted: false
-    onAccept: accepted = true
-
-    onVisibleChanged: if (!visible && !accepted) {
-        root.reject()
-    }
+    property int flags: Qt.Dialog
 
     ColumnLayout {
-        Keys.onEscapePressed: root.reject()
-
         id: column
         spacing: 0
         anchors.fill: parent
@@ -122,32 +81,22 @@ Kirigami.AbstractApplicationWindow {
                 }
             }
         }
-    }
-    
-    footer: Control {
-        leftPadding: Kirigami.Units.largeSpacing
-        rightPadding: Kirigami.Units.largeSpacing
-        topPadding: Kirigami.Units.largeSpacing
-        bottomPadding: Kirigami.Units.largeSpacing
-        
-        contentItem: RowLayout {
-            Item { Layout.fillWidth: true }
+
+        RowLayout {
+            Layout.fillWidth: true
+            Item {
+                Layout.fillWidth: true
+            }
             DialogButtonBox {
                 id: footerButtonBox
+                Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
-                onAccepted: root.accept()
-                onRejected: root.reject()
-
-                Binding {
-                    target: footerButtonBox.standardButton(DialogButtonBox.Ok)
-                    property: "enabled"
-                    when: footerButtonBox.standardButton(DialogButtonBox.Ok)
-                    value: root.acceptable
-                }
+                onAccepted: root.window.accept()
+                onRejected: root.window.reject()
 
                 Repeater {
                     model: root.actions
-                    
+
                     delegate: Button {
                         action: modelData
                     }

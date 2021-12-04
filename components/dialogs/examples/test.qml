@@ -19,7 +19,7 @@ Kirigami.AbstractApplicationWindow {
     width: 600
     height: 600
 
-    DesktopSystemDialog {
+    SystemDialog {
         id: simple
         title: "Reset Data"
         subtitle: "This will reset all of your data."
@@ -51,7 +51,7 @@ Kirigami.AbstractApplicationWindow {
         ]
     }
     
-    DesktopSystemDialog {
+    SystemDialog {
         id: desktopPolkit
         title: "Authentication Required"
         subtitle: "Authentication is needed to run `/usr/bin/ls` as the super user."
@@ -78,14 +78,14 @@ Kirigami.AbstractApplicationWindow {
         ]
     }
 
-    DesktopSystemDialog {
+    SystemDialog {
         id: xdgDialog
         title: "Wallet access"
         subtitle: "Share your wallet with 'Somebody'."
         iconName: "kwallet"
         acceptable: false
 
-        dialogButtonBox.standardButtons: DialogButtonBox.Ok | DialogButtonBox.Ok
+        dialogButtonBox.standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         Component.onCompleted: {
             dialogButtonBox.standardButton(DialogButtonBox.Ok).text = "Share"
         }

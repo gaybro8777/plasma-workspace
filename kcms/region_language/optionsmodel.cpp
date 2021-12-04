@@ -93,10 +93,10 @@ QVariant OptionsModel::data(const QModelIndex &index, int role) const
     case Subtitle: {
         switch (row) {
         case 0:
-            if (m_settings->lang() != m_settings->defaultLangValue()) {
-                return getNativeName(m_settings->lang());
+            if (m_settings->lang().isEmpty()) {
+                return i18n("System Default");
             } else {
-                return m_settings->lang();
+                return getNativeName(m_settings->lang());
             }
         case 1:
             if (m_settings->numeric() != m_settings->defaultNumericValue()) {

@@ -11,11 +11,6 @@
     <entry key="LANG" name="lang" type="String">
         <code>
             QString lang = QString::fromLocal8Bit(qgetenv("LANG"));
-            if (lang.isEmpty()) {
-                lang = i18n("System Default");
-            } else {
-                lang = QLocale(lang).nativeLanguageName();
-            }
         </code>
         <default code="true">lang</default>
     </entry>

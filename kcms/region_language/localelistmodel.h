@@ -39,6 +39,7 @@ public:
     void setFilter(const QString &filter);
     QString selectedConfig() const;
     void setSelectedConfig(const QString &config);
+    Q_INVOKABLE void setLang(const QString &lang);
 
 Q_SIGNALS:
     void filterChanged();

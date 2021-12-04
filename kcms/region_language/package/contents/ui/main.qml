@@ -152,6 +152,16 @@ KCM.ScrollViewKCM {
 
             LocaleListModel {
                 id: localeListModel
+                Component.onCompleted: {
+                    localeListModel.setLang(kcm.settings.lang);
+                }
+            }
+
+            Connections {
+                target: kcm.settings
+                onLangChanged: {
+                    localeListModel.setLang(kcm.settings.lang);
+                }
             }
 
             header: Kirigami.SearchField {

@@ -12,7 +12,7 @@ import QtGraphicalEffects 1.12
 import org.kde.kirigami 2.18 as Kirigami
 import "private" as Private
 
-Private.AbstractSystemDialog {
+Item {
     id: root
     
     default property Item mainItem
@@ -20,10 +20,11 @@ Private.AbstractSystemDialog {
     /**
      * Title of the dialog.
      */
+    property string mainText: title
     property string title: ""
     
     /**
-     * Subtitle of the dialog.
+     * SubmainText of the dialog.
      */
     property string subtitle: ""
     
@@ -59,10 +60,31 @@ Private.AbstractSystemDialog {
      * to click.
      */
     property list<Kirigami.Action> actions
+
+    property string iconName
     
     enum ActionLayout {
         Row,
         Column
+    }
+
+    property real preferredWidth
+
+    property Window window
+    readonly property DialogButtonBox dialogButtonBox: DialogButtonBox {
+        id: footerButtonBox
+        Layout.fillWidth: true
+        spacing: Kirigami.Units.smallSpacing
+        onAccepted: root.window.accept()
+        onRejected: root.window.reject()
+
+        Repeater {
+            model: root.actions
+
+            delegate: Button {
+                action: modelData
+            }
+        }
     }
     
     /**
@@ -74,7 +96,7 @@ Private.AbstractSystemDialog {
      */
     property int layout: actions.length > 3 ? 1 : 0
     
-    bodyItem: ColumnLayout {
+    mainItem: ColumnLayout {
         spacing: 0
         
         // header
@@ -101,7 +123,7 @@ Private.AbstractSystemDialog {
                     Layout.rightMargin: Kirigami.Units.largeSpacing
                     Layout.alignment: Qt.AlignVCenter
                     level: 2
-                    text: root.title
+                    text: root.mainText
                     wrapMode: Text.Wrap
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter

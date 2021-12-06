@@ -75,7 +75,7 @@ Kirigami.AbstractApplicationWindow {
         value: root.acceptable
     }
 
-    DesktopSystemDialog {
+    MobileSystemDialog {
         id: contentDialog
         anchors.fill: parent
 

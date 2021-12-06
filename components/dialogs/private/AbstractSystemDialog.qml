@@ -40,7 +40,7 @@ Kirigami.AbstractApplicationWindow {
      * The initial height and width of the dialog is calculated from the 
      * `implicitWidth` and `implicitHeight` of this item.
      */
-    default property Item bodyItem
+    default property Item mainItem
     
     /**
      * This property holds the absolute maximum height the dialog can be
@@ -191,7 +191,7 @@ Kirigami.AbstractApplicationWindow {
                     }
                 }
                 
-                contentItem: root.bodyItem
+                contentItem: root.mainItem
             }
         }
     }

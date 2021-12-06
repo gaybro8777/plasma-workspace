@@ -15,7 +15,7 @@ import "private" as Private
 Private.AbstractSystemDialog {
     id: root
     
-    default property Item mainItem
+    default property alias mainItem: mainControl.contentItem
     
     /**
      * Title of the dialog.
@@ -65,7 +65,7 @@ Private.AbstractSystemDialog {
      */
     property list<Kirigami.Action> actions
     
-    bodyItem: ColumnLayout {
+    mainItem: ColumnLayout {
         id: column
         spacing: 0
         
@@ -108,12 +108,12 @@ Private.AbstractSystemDialog {
                     elide: Text.ElideRight
                 }
                 Control {
+                    id: mainControl
                     leftPadding: 0
                     rightPadding: 0
                     bottomPadding: 0
                     topPadding: 0
                     Layout.fillWidth: true
-                    contentItem: root.mainItem
                 }
             }
         }

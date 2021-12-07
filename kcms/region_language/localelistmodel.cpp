@@ -61,14 +61,21 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
         return flagIconPath;
     }
     case DisplayName: {
-        if (name == QStringLiteral("C")) {
+        // 0 is unset option, 1 is locale C
+        if (tupleIndex == 1) {
             return name;
         }
         const QString clabel = !country.isEmpty() ? country : QLocale::countryToString(locale.country());
+        QString languageName;
         if (!lang.isEmpty()) {
-            return lang + QStringLiteral(" (") + clabel + QStringLiteral(")");
+            languageName = lang;
         } else {
-            return name + QStringLiteral(" (") + clabel + QStringLiteral(")");
+            languageName = name;
+        }
+        if (tupleIndex == 0) {
+            return languageName + QStringLiteral(" ") + clabel;
+        } else {
+            return languageName + QStringLiteral(" (") + clabel + QStringLiteral(")");
         }
     }
     case LocaleName: {
@@ -196,7 +203,7 @@ void LocaleListModel::setLang(const QString &lang)
         std::get<0>(m_localeTuples.front()) = i18n("System Default");
         std::get<1>(m_localeTuples.front()) = tmpLang;
     } else {
-        std::get<0>(m_localeTuples.front()) = i18n("Default for");
+        std::get<0>(m_localeTuples.front()) = i18nc("Inherit value from setting $X, default value for this field", "Default for");
         std::get<1>(m_localeTuples.front()) = QLocale(tmpLang).nativeLanguageName();
     }
     std::get<3>(m_localeTuples.front()) = QLocale(tmpLang);

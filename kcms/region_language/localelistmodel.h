@@ -50,7 +50,8 @@ private:
     void getExample();
 
     QString m_filter;
-    std::vector<std::tuple<QString, QString, QString, QLocale>> m_localeTuples; // lang, country, name
+    // native language name, english language name, native country name, english country name, flag code, locale
+    std::vector<std::tuple<QString, QString, QString, QString, QString, QLocale>> m_localeTuples;
     std::vector<int> m_filteredLocales;
     bool m_noFilter = true;
     ConfigType m_configType = Lang;

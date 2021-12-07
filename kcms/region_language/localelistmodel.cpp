@@ -25,10 +25,19 @@ LocaleListModel::LocaleListModel()
 {
     QList<QLocale> m_locales = QLocale::matchingLocales(QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry);
     m_localeTuples.reserve(m_locales.size() + 1);
-    m_localeTuples.push_back(std::tuple<QString, QString, QString, QLocale>(i18n("Default for "), i18n("System"), i18n("Default"), QLocale()));
+    m_localeTuples.push_back(std::tuple<QString, QString, QString, QString, QString, QLocale>(i18n("Default for "),
+                                                                                              QString(),
+                                                                                              i18n("System"),
+                                                                                              QString(),
+                                                                                              i18n("Default"),
+                                                                                              QLocale()));
     for (auto &locale : m_locales) {
-        m_localeTuples.push_back(
-            std::tuple<QString, QString, QString, QLocale>(locale.nativeLanguageName(), locale.nativeCountryName(), locale.name(), locale));
+        m_localeTuples.push_back(std::tuple<QString, QString, QString, QString, QString, QLocale>(locale.nativeLanguageName(),
+                                                                                                  QLocale::languageToString(locale.language()),
+                                                                                                  locale.nativeCountryName(),
+                                                                                                  QLocale::countryToString(locale.country()),
+                                                                                                  locale.name(),
+                                                                                                  locale));
     }
 }
 int LocaleListModel::rowCount(const QModelIndex &parent) const
@@ -49,7 +58,7 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
         tupleIndex = m_filteredLocales.at(index.row());
     }
 
-    const auto &[lang, country, name, locale] = m_localeTuples.at(tupleIndex);
+    const auto &[lang, engLang, country, engCountry, name, locale] = m_localeTuples.at(tupleIndex);
     switch (role) {
     case FlagIcon: {
         QString flagCode;
@@ -65,7 +74,7 @@ QVariant LocaleListModel::data(const QModelIndex &index, int role) const
         if (tupleIndex == 1) {
             return name;
         }
-        const QString clabel = !country.isEmpty() ? country : QLocale::countryToString(locale.country());
+        const QString clabel = !country.isEmpty() ? country : engCountry;
         QString languageName;
         if (!lang.isEmpty()) {
             languageName = lang;
@@ -129,12 +138,16 @@ void LocaleListModel::filterLocale()
     if (!m_filter.isEmpty()) {
         m_filteredLocales.clear();
         int i{0};
-        for (const auto &[lang, country, name, _locale] : m_localeTuples) {
+        for (const auto &[lang, engLang, country, engCountry, name, _locale] : m_localeTuples) {
             if (lang.indexOf(m_filter, 0, Qt::CaseInsensitive) != -1) {
                 m_filteredLocales.push_back(i);
             } else if (country.indexOf(m_filter, 0, Qt::CaseInsensitive) != -1) {
                 m_filteredLocales.push_back(i);
             } else if (name.indexOf(m_filter, 0, Qt::CaseInsensitive) != -1) {
+                m_filteredLocales.push_back(i);
+            } else if (engCountry.indexOf(m_filter, 0, Qt::CaseInsensitive) != -1) {
+                m_filteredLocales.push_back(i);
+            } else if (engLang.indexOf(m_filter, 0, Qt::CaseInsensitive) != -1) {
                 m_filteredLocales.push_back(i);
             }
             i++;
@@ -199,14 +212,17 @@ void LocaleListModel::setLang(const QString &lang)
         tmpLang = lang;
     }
 
+    auto &[languageName, engLang, country, engCountry, name, locale] = m_localeTuples.front();
     if (isC) {
-        std::get<0>(m_localeTuples.front()) = i18n("System Default");
-        std::get<1>(m_localeTuples.front()) = tmpLang;
+        languageName = i18n("System Default");
+        country = tmpLang;
+        engCountry = tmpLang;
     } else {
-        std::get<0>(m_localeTuples.front()) = i18nc("Inherit value from setting $X, default value for this field", "Default for");
-        std::get<1>(m_localeTuples.front()) = QLocale(tmpLang).nativeLanguageName();
+        languageName = i18nc("Inherit value from setting $X, default value for this field", "Default for");
+        country = QLocale(tmpLang).nativeLanguageName();
+        engCountry = QLocale::countryToString(QLocale(tmpLang).country());
     }
-    std::get<3>(m_localeTuples.front()) = QLocale(tmpLang);
+    locale = QLocale(tmpLang);
 
     Q_EMIT dataChanged(createIndex(0, 0), createIndex(0, 0));
 }

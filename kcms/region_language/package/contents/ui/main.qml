@@ -28,8 +28,18 @@ KCM.ScrollViewKCM {
 
             type: Kirigami.MessageType.Information
 
-            text: i18nc("@info", "Your changes will take effect the next time you log in.\n\nGenerating Locales; don't turn off the computer yet.")
+            text: i18nc("@info", "Your changes will take effect the next time you log in.")
         }
+
+        Kirigami.InlineMessage {
+            id: dontShutdownMsg
+            Layout.fillWidth: true
+
+            type: Kirigami.MessageType.Warning
+
+            text:  i18n("@info", "Generating Locales; don't turn off the computer yet.")
+        }
+
         Kirigami.InlineMessage {
             id: installFontMsg
             Layout.fillWidth: true
@@ -62,15 +72,19 @@ KCM.ScrollViewKCM {
     Connections {
         target: kcm
         function onStartGenerateLocale() {
+            dontShutdownMsg.visible = true;
             takeEffectNextTimeMsg.visible = true;
         }
         function onRequireInstallFont() {
+            dontShutdownMsg.visible = false;
             installFontMsg.visible = true;
         }
         function onAllManual() {
+            dontShutdownMsg.visible = false;
             installFontMsg.visible = true;
         }
         function onGenerateFinished() {
+            dontShutdownMsg.visible = false;
             installSuccessMsg.visible = true;
         }
     }

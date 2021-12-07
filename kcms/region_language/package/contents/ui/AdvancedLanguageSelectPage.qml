@@ -14,6 +14,8 @@ import org.kde.kcm 1.2 as KCM
 import kcmregionandlang 1.0
 
 KCM.ScrollViewKCM {
+    property int replaceLangIndex: -1
+
     id: languageSelectPage
     title: i18n("Language")
     LanguageListModel {
@@ -76,6 +78,14 @@ KCM.ScrollViewKCM {
                         onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                     },
                     Kirigami.Action {
+                        iconName: "configure"
+                        tooltip: i18nc("@info:tooltip", "Change Language")
+                        onTriggered: {
+                            replaceLangIndex = index;
+                            addLanguagesSheet.open();
+                        }
+                    },
+                    Kirigami.Action {
                         iconName: "edit-delete"
                         visible: languageListView.count > 1
                         tooltip: i18nc("@info:tooltip", "Remove")
@@ -107,12 +117,17 @@ KCM.ScrollViewKCM {
             label: model.nativeName
             action: Kirigami.Action {
                 onTriggered: {
-                    languageListModel.selectedLanguageModel.addLanguage(model.languageCode);
+                    if (replaceLangIndex >= 0) {
+                        languageListModel.selectedLanguageModel.replaceLanguage(replaceLangIndex, model.languageCode);
+                        replaceLangIndex = -1;
+                    } else {
+                        languageListModel.selectedLanguageModel.addLanguage(model.languageCode);
+                    }
                     addLanguagesSheet.close();
                 }
             }
         }
-    }
+    }    
 
     Kirigami.OverlaySheet {
         id: addLanguagesSheet
@@ -139,7 +154,10 @@ KCM.ScrollViewKCM {
 
             text: i18nc("@action:button", "Add languages…")
 
-            onClicked: addLanguagesSheet.sheetOpen = !addLanguagesSheet.sheetOpen
+            onClicked: {
+                addLanguagesSheet.open();
+                replaceLangIndex = -1;
+            }
 
             checkable: true
             checked: addLanguagesSheet.sheetOpen

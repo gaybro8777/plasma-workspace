@@ -257,6 +257,28 @@ void SelectedLanguageModel::addLanguage(const QString &lang)
     Q_EMIT exampleChanged();
 }
 
+void SelectedLanguageModel::replaceLanguage(int index, const QString &lang)
+{
+    if (index < 0 || index >= m_selectedLanguages.size() || lang.isEmpty()) {
+        return;
+    }
+
+    int existLangIndex = m_selectedLanguages.indexOf(lang);
+    // return if no change
+    if (existLangIndex == index) {
+        return;
+    }
+
+    beginResetModel();
+    m_selectedLanguages[index] = lang;
+    if (existLangIndex != -1) {
+        m_selectedLanguages.removeAt(existLangIndex);
+    }
+    endResetModel();
+    saveLanguages();
+    Q_EMIT exampleChanged();
+}
+
 void SelectedLanguageModel::saveLanguages()
 {
     if (!m_settings) {

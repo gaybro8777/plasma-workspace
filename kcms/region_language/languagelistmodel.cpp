@@ -105,7 +105,7 @@ void LanguageListModel::setCurrentIndex(int index)
 
 QString LanguageListModel::exampleHelper(std::function<QString(const QLocale &)> func) const
 {
-    static auto getLangWithDefault = [this] {
+    auto getLangWithDefault = [this] {
         QString defaultLang = m_settings->defaultLangValue();
         if (m_settings->lang() != defaultLang) {
             return QLocale(m_settings->lang());

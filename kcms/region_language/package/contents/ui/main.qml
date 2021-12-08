@@ -37,7 +37,7 @@ KCM.ScrollViewKCM {
 
             type: Kirigami.MessageType.Warning
 
-            text:  i18n("@info", "Generating Locales; don't turn off the computer yet.")
+            text:  i18nc("@info", "Generating Locales; don't turn off the computer yet.")
         }
 
         Kirigami.InlineMessage {

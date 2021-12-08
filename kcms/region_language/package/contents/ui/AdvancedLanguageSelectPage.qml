@@ -67,27 +67,28 @@ KCM.ScrollViewKCM {
 
                         color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor;
                     }
+
+                    QQC2.Button {
+                        Layout.alignment: Qt.AlignRight
+                        text: i18nc("@info:tooltip", "Change Language")
+                        icon.name: "configure"
+                        onClicked: {
+                            replaceLangIndex = index;
+                            addLanguagesSheet.open();
+                        }
+                    }
                 }
 
                 actions: [
                     Kirigami.Action {
                         enabled: index > 0
-                        visible: languageListView.count > 1
                         iconName: "go-top"
                         tooltip: i18nc("@info:tooltip", "Promote to default")
                         onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                     },
                     Kirigami.Action {
-                        iconName: "configure"
-                        tooltip: i18nc("@info:tooltip", "Change Language")
-                        onTriggered: {
-                            replaceLangIndex = index;
-                            addLanguagesSheet.open();
-                        }
-                    },
-                    Kirigami.Action {
                         iconName: "edit-delete"
-                        visible: languageListView.count > 1
+                        enabled: index > 0
                         tooltip: i18nc("@info:tooltip", "Remove")
                         onTriggered: languageListModel.selectedLanguageModel.remove(index);
                     }]

@@ -250,9 +250,11 @@ void SelectedLanguageModel::addLanguage(const QString &lang)
         return;
     }
 
-    beginInsertRows(QModelIndex(), m_selectedLanguages.size(), m_selectedLanguages.size());
+    // fix Kirigami.SwipeListItem doesn't connect to Actions' visible property.
+    // Reset model enforce a refresh of delegate
+    beginResetModel();
     m_selectedLanguages.push_back(lang);
-    endInsertRows();
+    endResetModel();
     saveLanguages();
     Q_EMIT exampleChanged();
 }

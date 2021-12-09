@@ -70,6 +70,7 @@ KCM.ScrollViewKCM {
 
                     QQC2.Button {
                         Layout.alignment: Qt.AlignRight
+                        visible: languageListView.count <= 1
                         text: i18nc("@info:tooltip", "Change Language")
                         icon.name: "configure"
                         onClicked: {
@@ -82,13 +83,14 @@ KCM.ScrollViewKCM {
                 actions: [
                     Kirigami.Action {
                         enabled: index > 0
+                        visible: languageListView.count > 1
                         iconName: "go-top"
                         tooltip: i18nc("@info:tooltip", "Promote to default")
                         onTriggered: languageListModel.selectedLanguageModel.move(index, 0)
                     },
                     Kirigami.Action {
+                        visible: languageListView.count > 1
                         iconName: "edit-delete"
-                        enabled: index > 0
                         tooltip: i18nc("@info:tooltip", "Remove")
                         onTriggered: languageListModel.selectedLanguageModel.remove(index);
                     }]

@@ -111,6 +111,14 @@ void History::remove(const HistoryItemConstPtr &newItem)
     m_model->remove(newItem->uuid());
 }
 
+
+void History::pin(const HistoryItemConstPtr &item)
+{
+    if (!item)
+        return;
+    m_model->pin(item->uuid());
+}
+
 void History::slotClear()
 {
     m_model->clear();

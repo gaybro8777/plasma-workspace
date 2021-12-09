@@ -61,6 +61,7 @@ HistoryItemPtr HistoryItem::create(QDataStream &dataStream)
         return HistoryItemPtr();
     }
     QString type;
+    bool pinned;
     dataStream >> type;
     if (type == QLatin1String("url")) {
         QList<QUrl> urls;

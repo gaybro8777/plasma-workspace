@@ -183,6 +183,7 @@ ColumnLayout {
                 uuid: uuid
             });
         }
+        onPin: clipboardSource.service(uuid, "pin")
         onBarcode: {
             stack.push(Qt.resolvedUrl("BarcodePage.qml"), {
                 text: text

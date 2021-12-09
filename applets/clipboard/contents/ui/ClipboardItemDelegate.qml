@@ -27,6 +27,7 @@ PlasmaComponents2.ListItem {
 
     signal itemSelected(string uuid)
     signal remove(string uuid)
+    signal pin(string uuid)
     signal edit(string uuid)
     signal barcode(string text)
     signal action(string uuid)
@@ -44,12 +45,6 @@ PlasmaComponents2.ListItem {
 
     Keys.onDeletePressed: {
         remove(UuidRole);
-    }
-
-    ListView.onIsCurrentItemChanged: {
-        if (ListView.isCurrentItem) {
-            labelMask.source = label // calculate on demand
-        }
     }
 
     // this stuff here is used so we can fade out the text behind the tool buttons
@@ -78,13 +73,13 @@ PlasmaComponents2.ListItem {
         anchors.fill: label
         cached: true
         maskSource: labelMaskSource
-        visible: !!source && menuItem.ListView.isCurrentItem
+        visible: !!source && (menuItem.ListView.isCurrentItem || !!PinnedRole)
     }
 
     Item {
         id: label
         height: childrenRect.height
-        visible: !menuItem.ListView.isCurrentItem
+        visible: !menuItem.ListView.isCurrentItem && !PinnedRole
         anchors {
             left: parent.left
             leftMargin: PlasmaCore.Units.gridUnit / 2 - listMargins.left
@@ -106,7 +101,7 @@ PlasmaComponents2.ListItem {
             verticalCenter: parent.verticalCenter
         }
         source: "DelegateToolButtons.qml"
-        active: menuItem.ListView.isCurrentItem
+        active: menuItem.ListView.isCurrentItem || !!PinnedRole
 
         // It's not recommended to change anchors via conditional bindings, use AnchorChanges instead.
         // See https://doc.qt.io/qt-5/qtquick-positioning-anchors.html#changing-anchors
@@ -128,6 +123,12 @@ PlasmaComponents2.ListItem {
                 menuItem.KeyNavigation.right = toolButtonsLoader.item.children[0]
                 // break binding, once it was loaded, never unload
                 active = true;
+                labelMask.source = label;
+            }
+        }
+        Component.onCompleted: {
+            if (active) {
+                labelMask.source = label;
             }
         }
     }

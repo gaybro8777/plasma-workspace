@@ -56,6 +56,9 @@ void ClipboardJob::start()
     } else if (operation == QLatin1String("remove")) {
         m_klipper->history()->remove(item);
         setResult(true);
+    } else if (operation == QLatin1String("pin")) {
+        m_klipper->history()->pin(item);
+        setResult(true);
     } else if (operation == QLatin1String("edit")) {
         if (parameters().contains(QLatin1String("text"))) {
             const QString text = parameters()[QLatin1String("text")].toString();

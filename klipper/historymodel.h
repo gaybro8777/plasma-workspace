@@ -25,8 +25,13 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex &parent, bool removeAll);
     QHash<int, QByteArray> roleNames() const override;
     bool remove(const QByteArray &uuid);
+
+    bool pinned(const QByteArray &uuid);
+    void pin(const QByteArray &uuid);
+    QList<int> pinnedRows() const;
 
     int maxSize() const;
     void setMaxSize(int size);
@@ -51,6 +56,9 @@ public:
 
 private:
     void moveToTop(int row);
+    void sortItem(QSharedPointer<HistoryItem> item);
+    int unpinnedCount();
+    QList<int> m_pinnedItems;
     QList<QSharedPointer<HistoryItem>> m_items;
     int m_maxSize;
     bool m_displayImages;

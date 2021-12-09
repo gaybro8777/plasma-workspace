@@ -6,6 +6,8 @@
     </group>
     <group name="remove">
     </group>
+    <group name="pin">
+    </group>
     <group name="edit">
     </group>
     <group name="preview">

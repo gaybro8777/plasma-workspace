@@ -408,13 +408,31 @@ bool Klipper::loadHistory()
     history_stream >> version;
     delete[] version;
 
+
+    QString type;
+    history_stream.startTransaction();
+    history_stream >> type;
+    QList<int> pinnedRows;
+
+    if (type == QStringLiteral("pinnedRows")) {
+        history_stream.commitTransaction();
+        history_stream >> pinnedRows;
+    } else {
+        history_stream.rollbackTransaction();
+    }
+
     // The list needs to be reversed, as it is saved
     // youngest-first to keep the most important clipboard
     // items at the top, but the history is created oldest
     // first.
     QVector<HistoryItemPtr> reverseList;
+    int count = 0;
     for (HistoryItemPtr item = HistoryItem::create(history_stream); !item.isNull(); item = HistoryItem::create(history_stream)) {
         reverseList.prepend(item);
+        if (pinnedRows.contains(count)) {
+            item->pin();
+        }
+        ++count;
     }
 
     history()->slotClear();
@@ -458,9 +476,15 @@ void Klipper::saveHistory(bool empty)
     QDataStream history_stream(&data, QIODevice::WriteOnly);
     history_stream << KLIPPER_VERSION_STRING; // const char*
 
+
     if (!empty) {
         HistoryItemConstPtr item = history()->first();
         if (item) {
+            QList<int> pinnedRows = history()->model()->pinnedRows();
+            if (!pinnedRows.isEmpty()) {
+                history_stream << QStringLiteral("pinnedRows") << pinnedRows;
+            }
+
             do {
                 history_stream << item.data();
                 item = HistoryItemConstPtr(history()->find(item->next_uuid()));

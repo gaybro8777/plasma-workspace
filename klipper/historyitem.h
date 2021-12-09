@@ -39,6 +39,17 @@ public:
         return m_uuid;
     }
 
+    /*
+     * @return if an item is pinned
+     */
+    const bool pinned() const
+    {
+        return m_pinned;
+    }
+    void pin() {
+        m_pinned = !m_pinned;
+    }
+
     /**
      * Return the current item as pixmap
      * A text would be returned as a null pixmap,
@@ -93,6 +104,11 @@ protected:
 
 private:
     QByteArray m_uuid;
+
+    /*
+     * pinned items will not be removed from history
+     */
+    bool m_pinned = false;
 };
 
 inline const QPixmap &HistoryItem::image() const

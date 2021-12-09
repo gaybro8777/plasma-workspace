@@ -43,6 +43,12 @@ public:
     void remove(const QSharedPointer<const HistoryItem> &item);
 
     /**
+     * Pin/Unpin history item in history
+     */
+    void pin(const QSharedPointer<const HistoryItem> &item);
+
+
+    /**
      * Traversal: Get first item
      */
     QSharedPointer<const HistoryItem> first() const;

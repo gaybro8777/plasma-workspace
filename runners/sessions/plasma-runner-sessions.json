@@ -166,5 +166,6 @@
             "Plasma/Runner"
         ],
         "Version": "1.0"
-    }
+    },
+    "X-Plasma-ShowDesciptionInOverview": true
 }

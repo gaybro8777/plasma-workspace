@@ -722,7 +722,7 @@ void ShellCorona::primaryOutputNameChanged(const QString &oldOutputName, const Q
         }
     // On X11 we get fake screens as primary
     } else {
-        // Special case: we are in "no connectors" mode, there is only a (recycled) QScreen instance which is not attached to any output. threat this as a screen removed This happens only on X, wayland doesn't seem to be getting fake screens
+        // Special case: we are in "no connectors" mode, there is only a (recycled) QScreen instance which is not attached to any output. Treat this as a screen removed This happens only on X, wayland doesn't seem to be getting fake screens
         if (noRealOutputsConnected()) {
             handleScreenRemoved(newPrimary);
             return;

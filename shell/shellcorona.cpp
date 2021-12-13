@@ -712,24 +712,33 @@ void ShellCorona::primaryOutputNameChanged(const QString &oldOutputName, const Q
         return;
     }
 
-    // Special case: we are in "no connectors" mode, there is only a (recycled) QScreen instance which is not attached to any output. threat this as a screen removed
-    if (noRealOutputsConnected()) {
-        handleScreenRemoved(newPrimary);
-        return;
-    } else if (!oldPrimary || oldOutputName == ":0.0" || oldOutputName.isEmpty()) {
-        m_screenPool->setPrimaryConnector(newPrimary->name());
-        addOutput(newPrimary);
-        return;
+    const int oldIdOfPrimary = m_screenPool->id(newPrimary->name());
+
+    if (KWindowSystem::isPlatformWayland()) {
+        // This happens on Wayland, where primaryOutputchange gets emitted before screenadded
+        if (!m_desktopViewforId.contains(oldIdOfPrimary) && !m_redundantOutputs.contains(newPrimary)) {
+            m_screenPool->setPrimaryConnector(newPrimary->name());
+            addOutput(newPrimary);
+        }
+    // On X11 we get fake screens as primary
+    } else {
+        // Special case: we are in "no connectors" mode, there is only a (recycled) QScreen instance which is not attached to any output. threat this as a screen removed This happens only on X, wayland doesn't seem to be getting fake screens
+        if (noRealOutputsConnected()) {
+            handleScreenRemoved(newPrimary);
+            return;
+        } else if (!oldPrimary || oldOutputName == ":0.0" || oldOutputName.isEmpty()) {
+            m_screenPool->setPrimaryConnector(newPrimary->name());
+            addOutput(newPrimary);
+            return;
+        }
     }
 
-    const int oldIdOfPrimary = m_screenPool->id(newPrimary->name());
     m_screenPool->setPrimaryConnector(newPrimary->name());
 
     // swap order in m_desktopViewforId
     if (m_desktopViewforId.contains(0) && m_desktopViewforId.contains(oldIdOfPrimary)) {
         DesktopView *primaryDesktop = m_desktopViewforId.value(0);
         DesktopView *oldDesktopOfPrimary = m_desktopViewforId.value(oldIdOfPrimary);
-
         primaryDesktop->setScreenToFollow(newPrimary);
         primaryDesktop->show();
         oldDesktopOfPrimary->setScreenToFollow(oldPrimary);
@@ -1145,7 +1154,7 @@ bool ShellCorona::noRealOutputsConnected() const
 
 bool ShellCorona::isOutputFake(QScreen *screen) const
 {
-    return screen->name() == QStringLiteral(":0.0") || screen->geometry().isEmpty();
+    return screen->name() == QStringLiteral(":0.0") || screen->geometry().isEmpty() || screen->name().isEmpty();
 }
 
 bool ShellCorona::isOutputRedundant(QScreen *screen) const
@@ -1223,6 +1232,14 @@ void ShellCorona::addOutput(QScreen *screen)
 {
     Q_ASSERT(screen);
 
+    if (isOutputFake(screen)) {
+        return;
+    }
+    for (auto desk : m_desktopViewforId.values()) {
+        if (desk->screenToFollow() == screen) {
+            return;
+        }
+    }
     if (screen->geometry().isNull()) {
         return;
     }

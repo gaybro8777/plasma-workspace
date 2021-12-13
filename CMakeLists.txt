@@ -171,7 +171,11 @@ option(GLIBC_LOCALE_GEN "Auto generate Glibc locale with locale-gen and /etc/loc
 if(GLIBC_LOCALE_GEN)
     set(GLIBC_LOCALE TRUE)
 endif()
-
+find_package(PolkitQt5-1)
+set_package_properties(PolkitQt5-1 PROPERTIES DESCRIPTION "DBus interface wrapper for Polkit"
+                                       PURPOSE "Communicate with localegen helper in region & lang kcm"
+                                       TYPE REQUIRED
+                                        )
 
 find_package(KIOExtras)
 set_package_properties(KIOExtras PROPERTIES DESCRIPTION "Common KIO slaves for operations."

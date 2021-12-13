@@ -726,6 +726,7 @@ void ShellCorona::primaryOutputNameChanged(const QString &oldOutputName, const Q
         if (noRealOutputsConnected()) {
             handleScreenRemoved(newPrimary);
             return;
+        // On X11, the output named :0.0 is fake
         } else if (!oldPrimary || oldOutputName == ":0.0" || oldOutputName.isEmpty()) {
             m_screenPool->setPrimaryConnector(newPrimary->name());
             addOutput(newPrimary);
@@ -1154,6 +1155,8 @@ bool ShellCorona::noRealOutputsConnected() const
 
 bool ShellCorona::isOutputFake(QScreen *screen) const
 {
+    // On X11 the output named :0.0 is fake (the geometry is usually valid and whatever the geometry
+    // of the last connected screen was), on wayland the fake output has no name and no geometry
     return screen->name() == QStringLiteral(":0.0") || screen->geometry().isEmpty() || screen->name().isEmpty();
 }
 

@@ -21,58 +21,40 @@ Kirigami.AbstractApplicationWindow {
 
     SystemDialog {
         id: simple
-        title: "Reset Data"
+        mainText: "Reset Data"
         subtitle: "This will reset all of your data."
         iconName: "documentinfo"
         
         dialogButtonBox.standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
-        dialogButtonBox.onAccepted: simple.close()
-        dialogButtonBox.onRejected: simple.close()
     }
     
-    DesktopCSDSystemDialog {
+    SystemDialog {
         id: simpleCSD
-        title: "Reset Data"
+        mainText: "Reset Data"
         subtitle: "This will reset all of your data."
         iconName: "documentinfo"
         
-        preferredWidth: Kirigami.Units.gridUnit * 17
-        actions: [
-            Kirigami.Action {
-                text: "Cancel"
-                icon.name: "dialog-cancel"
-                onTriggered: simpleCSD.close()
-            },
-            Kirigami.Action {
-                text: "OK"
-                iconName: "dialog-ok"
-                onTriggered: simpleCSD.close()
-            }
-        ]
+        width: Kirigami.Units.gridUnit * 17
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+        }
     }
     
     SystemDialog {
         id: desktopPolkit
-        title: "Authentication Required"
+        mainText: "Authentication Required"
         subtitle: "Authentication is needed to run `/usr/bin/ls` as the super user."
         iconName: "im-user-online"
 
         Kirigami.PasswordField {}
 
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+        }
         actions: [
             Kirigami.Action {
                 text: "Details"
                 iconName: "documentinfo"
-                onTriggered: desktopPolkit.close()
-            },
-            Kirigami.Action {
-                text: "Cancel"
-                iconName: "dialog-cancel"
-                onTriggered: desktopPolkit.close()
-            },
-            Kirigami.Action {
-                text: "OK"
-                icon.name: "dialog-ok"
                 onTriggered: desktopPolkit.close()
             }
         ]
@@ -80,13 +62,13 @@ Kirigami.AbstractApplicationWindow {
 
     SystemDialog {
         id: xdgDialog
-        title: "Wallet access"
+        mainText: "Wallet access"
         subtitle: "Share your wallet with 'Somebody'."
         iconName: "kwallet"
         acceptable: false
 
-        dialogButtonBox.standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
             dialogButtonBox.standardButton(DialogButtonBox.Ok).text = "Share"
         }
         actions: [
@@ -98,43 +80,35 @@ Kirigami.AbstractApplicationWindow {
         ]
     }
     
-    DesktopCSDSystemDialog {
+    SystemDialog {
         id: desktopCSDPolkit
-        title: "Authentication Required"
+        mainText: "Authentication Required"
         subtitle: "Authentication is needed to run `/usr/bin/ls` as the super user."
         iconName: "im-user-online"
-        preferredWidth: Kirigami.Units.gridUnit * 25
-        darkenBackground: false
+        width: Kirigami.Units.gridUnit * 25
         
         Kirigami.PasswordField {}
         
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+        }
         actions: [
             Kirigami.Action {
                 text: "Details"
                 iconName: "documentinfo"
                 onTriggered: desktopCSDPolkit.close()
-            },
-            Kirigami.Action {
-                text: "Cancel"
-                iconName: "dialog-cancel"
-                onTriggered: desktopCSDPolkit.close()
-            },
-            Kirigami.Action {
-                text: "OK"
-                icon.name: "dialog-ok"
-                onTriggered: desktopCSDPolkit.close()
             }
         ]
     }
     
-    MobileSystemDialog {
+    SystemDialog {
         id: mobilePolkit
-        title: "Authentication Required"
+        mainText: "Authentication Required"
         subtitle: "Authentication is needed to run `/usr/bin/ls` as the super user."
-        preferredWidth: Kirigami.Units.gridUnit * 20
-        
-        padding: Kirigami.Units.largeSpacing
+
         ColumnLayout {
+            width: Kirigami.Units.gridUnit * 20
+
             Kirigami.Avatar {
                 implicitHeight: Kirigami.Units.iconSizes.medium
                 implicitWidth: Kirigami.Units.iconSizes.medium
@@ -145,82 +119,61 @@ Kirigami.AbstractApplicationWindow {
             }
         }
         
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+        }
         actions: [
             Kirigami.Action {
                 text: "Details"
                 iconName: "documentinfo"
                 onTriggered: mobilePolkit.close()
-            },
-            Kirigami.Action {
-                text: "Cancel"
-                iconName: "dialog-cancel"
-                onTriggered: mobilePolkit.close()
-            },
-            Kirigami.Action {
-                text: "OK"
-                icon.name: "dialog-ok"
-                onTriggered: mobilePolkit.close()
             }
         ]
     }
     
-    MobileSystemDialog {
+    SystemDialog {
         id: sim
-        title: "SIM Locked"
+        mainText: "SIM Locked"
         subtitle: "Please enter your SIM PIN in order to unlock it."
         
-        preferredWidth: Kirigami.Units.gridUnit * 20
-        padding: Kirigami.Units.largeSpacing
+        width: Kirigami.Units.gridUnit * 20
         
-        Kirigami.PasswordField { Layout.fillWidth: true }
+        Kirigami.PasswordField {
+            Layout.fillWidth: true
+        }
         
-        actions: [
-            Kirigami.Action {
-                text: "Cancel"
-                iconName: "dialog-cancel"
-                onTriggered: sim.close()
-            },
-            Kirigami.Action {
-                text: "OK"
-                icon.name: "dialog-ok"
-                onTriggered: sim.close()
-            }
-        ]
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+        }
     }
     
-    MobileSystemDialog {
+    SystemDialog {
         id: device
-        title: "Device Request"
+        mainText: "Device Request"
         subtitle: "Allow <b>PureMaps</b> to access your location?"
-        
-        layout: MobileSystemDialog.Column
 
         actions: [
             Kirigami.Action {
                 text: "Allow all the time"
-                onTriggered: device.close()
+                onTriggered: device.accept()
             },
             Kirigami.Action {
                 text: "Allow only while the app is in use"
-                onTriggered: device.close()
+                onTriggered: device.accept()
             },
             Kirigami.Action {
                 text: "Deny"
-                onTriggered: device.close()
+                onTriggered: device.accept()
             }
         ]
     }
     
-    MobileSystemDialog {
+    SystemDialog {
         id: wifi
-        title: "eduroam"
-        preferredWidth: Kirigami.Units.gridUnit * 18
+        mainText: "eduroam"
+        width: Kirigami.Units.gridUnit * 18
         maximumHeight: Kirigami.Units.gridUnit * 20
         
-        leftPadding: Kirigami.Units.largeSpacing
-        rightPadding: Kirigami.Units.largeSpacing
-        topPadding: 0
-        bottomPadding: 0
         Kirigami.FormLayout {
             ComboBox {
                 model: ["PEAP"]
@@ -252,19 +205,11 @@ Kirigami.AbstractApplicationWindow {
                 Layout.fillWidth: true
             }
         }
-    
-        actions: [
-            Kirigami.Action {
-                text: "Cancel"
-                iconName: "dialog-cancel"
-                onTriggered: wifi.close()
-            },
-            Kirigami.Action {
-                text: "Save"
-                icon.name: "dialog-ok"
-                onTriggered: wifi.close()
-            }
-        ]
+
+        Component.onCompleted: {
+            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
+            dialogButtonBox.standardButton(DialogButtonBox.Ok).text = "Save"
+        }
     }
     
     ColumnLayout {

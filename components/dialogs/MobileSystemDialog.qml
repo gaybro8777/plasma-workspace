@@ -61,32 +61,20 @@ Item {
      */
     property list<Kirigami.Action> actions
 
+    readonly property int flags: Qt.Dialog
     property string iconName
+    property real dialogCornerRadius: Kirigami.Units.smallSpacing * 2
     
     enum ActionLayout {
         Row,
         Column
     }
 
-    property real preferredWidth
+    readonly property real minimumHeight: column.Layout.minimumHeight
+    readonly property real minimumWidth: column.Layout.minimumWidth
 
     property Window window
-    readonly property DialogButtonBox dialogButtonBox: DialogButtonBox {
-        id: footerButtonBox
-        Layout.fillWidth: true
-        spacing: Kirigami.Units.smallSpacing
-        onAccepted: root.window.accept()
-        onRejected: root.window.reject()
 
-        Repeater {
-            model: root.actions
-
-            delegate: Button {
-                action: modelData
-            }
-        }
-    }
-    
     /**
      * The layout of the action buttons in the footer of the dialog.
      * 
@@ -96,24 +84,25 @@ Item {
      */
     property int layout: actions.length > 3 ? 1 : 0
     
-    mainItem: ColumnLayout {
+    ColumnLayout {
+        id: column
         spacing: 0
+        anchors.fill: parent
         
         // header
         Control {
             id: headerControl
-            
+
             Layout.fillWidth: true
-            Layout.maximumWidth: root.maximumWidth
-            Layout.preferredWidth: root.preferredWidth
-            
+            Layout.maximumWidth: root.window.maximumWidth
+
             topPadding: 0
             leftPadding: 0
             rightPadding: 0
             bottomPadding: 0
-            
+
             background: Item {}
-            
+
             contentItem: RowLayout {
                 Kirigami.Heading {
                     Layout.fillWidth: true
@@ -137,18 +126,17 @@ Item {
             
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.maximumWidth: root.maximumWidth
-            Layout.preferredWidth: root.preferredWidth
-            
+            Layout.maximumWidth: root.window.maximumWidth
+
             leftPadding: 0
             rightPadding: 0
             topPadding: 0
             bottomPadding: 0
-            
+
             background: Item {}
             contentItem: ColumnLayout {
                 spacing: 0
-                
+
                 Label {
                     id: subtitleLabel
                     Layout.fillWidth: true
@@ -161,13 +149,13 @@ Item {
                     text: root.subtitle
                     wrapMode: Label.Wrap
                 }
-                
+
                 // separator when scrolling
                 Kirigami.Separator {
                     Layout.fillWidth: true
                     opacity: root.mainItem && contentControl.flickableItem && contentControl.flickableItem.contentY !== 0 ? 1 : 0 // always maintain same height (as opposed to visible)
                 }
-                
+
                 // mainItem is in scrollview, in case of overflow
                 Private.ScrollView {
                     id: contentControl
@@ -181,27 +169,27 @@ Item {
                     // ensure window colour scheme, and background color
                     Kirigami.Theme.inherit: false
                     Kirigami.Theme.colorSet: Kirigami.Theme.Window
-                    
+
                     // needs to explicitly be set for each side to work
                     leftPadding: root.leftPadding; topPadding: root.topPadding
                     rightPadding: root.rightPadding; bottomPadding: root.bottomPadding
-                    
+
                     // height of everything else in the dialog other than the content
-                    property real otherHeights: headerControl.height + subtitleLabel.height + footerControl.height + root.topPadding + root.bottomPadding;
-                    
-                    property real calculatedMaximumWidth: root.maximumWidth > root.absoluteMaximumWidth ? root.absoluteMaximumWidth : root.maximumWidth
-                    property real calculatedMaximumHeight: root.maximumHeight > root.absoluteMaximumHeight ? root.absoluteMaximumHeight : root.maximumHeight
+                    property real otherHeights: headerControl.height + subtitleLabel.height + footerButtonBox.height + root.topPadding + root.bottomPadding;
+
+                    property real calculatedMaximumWidth: root.window.maximumWidth > root.absoluteMaximumWidth ? root.absoluteMaximumWidth : root.window.maximumWidth
+                    property real calculatedMaximumHeight: root.window.maximumHeight > root.absoluteMaximumHeight ? root.absoluteMaximumHeight : root.window.maximumHeight
                     property real calculatedImplicitWidth: root.mainItem ? (root.mainItem.implicitWidth ? root.mainItem.implicitWidth : root.mainItem.width) + root.leftPadding + root.rightPadding : 0
                     property real calculatedImplicitHeight: root.mainItem ? (root.mainItem.implicitHeight ? root.mainItem.implicitHeight : root.mainItem.height) + root.topPadding + root.bottomPadding : 0
-                    
+
                     // don't enforce preferred width and height if not set
                     Layout.preferredWidth: root.preferredWidth >= 0 ? root.preferredWidth : calculatedImplicitWidth + contentControl.rightSpacing
                     Layout.preferredHeight: root.preferredHeight >= 0 ? root.preferredHeight - otherHeights : calculatedImplicitHeight + contentControl.bottomSpacing
-                    
+
                     Layout.fillWidth: true
                     Layout.maximumWidth: calculatedMaximumWidth
                     Layout.maximumHeight: calculatedMaximumHeight >= otherHeights ? calculatedMaximumHeight - otherHeights : 0 // we enforce maximum height solely from the content
-                    
+
                     // give an implied width and height to the contentItem so that features like word wrapping/eliding work
                     // cannot placed directly in contentControl as a child, so we must use a property
                     property var widthHint: Binding {
@@ -218,7 +206,7 @@ Item {
                         // we are okay with overflow, if it exceeds maximumHeight we will allow scrolling
                         value: contentControl.Layout.preferredHeight - root.topPadding - root.bottomPadding - contentControl.bottomSpacing
                     }
-                    
+
                     // give explicit warnings since the maximumHeight is ignored when negative, so developers aren't confused
                     Component.onCompleted: {
                         if (contentControl.Layout.maximumHeight < 0 || contentControl.Layout.maximumHeight === Infinity) {
@@ -228,109 +216,38 @@ Item {
                 }
             }
         }
-        
-        // footer
         Control {
-            id: footerControl
-            visible: root.actions.length > 0
-            
             Layout.fillWidth: true
-            Layout.maximumWidth: root.maximumWidth
-            Layout.preferredWidth: root.preferredWidth
-            
-            topPadding: 0
-            bottomPadding: 0
-            leftPadding: 0
-            rightPadding: 0
-            
-            background: Kirigami.ShadowedRectangle {
-                Kirigami.Theme.colorSet: Kirigami.Theme.Window
-                Kirigami.Theme.inherit: false
-                color: Kirigami.Theme.backgroundColor
-                corners.bottomRightRadius: root.dialogCornerRadius
-                corners.bottomLeftRadius: root.dialogCornerRadius
-            } 
-            
-            contentItem: ColumnLayout {
-                spacing: 0
-                
-                // footer buttons (horizontal layout)
-                Component {
-                    id: horizontalButtons
-                    RowLayout {
-                        id: horizontalRowLayout
-                        spacing: 0
-                        
-                        Repeater {
-                            model: actions
-                            
-                            delegate: RowLayout {
-                                spacing: 0
-                                Layout.fillHeight: true
-                                
-                                Kirigami.Separator {
-                                    id: separator
-                                    property real fullWidth: width
-                                    visible: model.index !== 0
-                                    Layout.fillHeight: true
-                                }
-                                
-                                Private.MobileSystemDialogButton {
-                                    Layout.fillWidth: true
-                                    // ensure consistent widths for all buttons
-                                    Layout.maximumWidth: (horizontalRowLayout.width - Math.max(0, root.actions.length - 1) * separator.fullWidth) / root.actions.length
-                                    
-                                    corners.bottomLeftRadius: model.index === 0 ? root.dialogCornerRadius : 0
-                                    corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
-                                    
-                                    text: modelData.text
-                                    icon: modelData.icon
-                                    onClicked: modelData.trigger()
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // footer buttons (column layout)
-                Component {
-                    id: verticalButtons
-                    ColumnLayout {
-                        spacing: 0
-                        
-                        Repeater {
-                            model: actions
-                            
-                            delegate: ColumnLayout {
-                                spacing: 0
-                                Layout.fillWidth: true
-                                
-                                Kirigami.Separator {
-                                    visible: model.index !== 0
-                                    Layout.fillWidth: true
-                                }
-                                
-                                Private.MobileSystemDialogButton {
-                                    Layout.fillWidth: true
-                                    corners.bottomLeftRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
-                                    corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
-                                    text: modelData.text
-                                    icon: modelData.icon
-                                    onClicked: modelData.trigger()
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // actual buttons loader
-                Kirigami.Separator {
+            padding: 0
+            contentItem: footerButtonBox
+        }
+    }
+
+    readonly property DialogButtonBox dialogButtonBox: DialogButtonBox {
+        //We want to report the same width on all so the button area is split equally
+        readonly property real sameWidth: 50
+        Layout.fillWidth: true
+        id: footerButtonBox
+        onAccepted: root.window.accept()
+        onRejected: root.window.reject()
+        delegate: Private.MobileSystemDialogButton {
+            Layout.fillWidth: true
+            withSeparator: true
+            Layout.preferredWidth: footerButtonBox.sameWidth
+        }
+
+        contentItem: RowLayout {
+            anchors.fill: parent
+            Layout.fillWidth: true
+            Repeater {
+                model: root.actions
+                delegate: Private.MobileSystemDialogButton {
                     Layout.fillWidth: true
-                }
-                Loader {
-                    Layout.fillWidth: true
-                    active: true
-                    sourceComponent: layout === 0 ? horizontalButtons : verticalButtons
+                    Layout.preferredWidth: footerButtonBox.sameWidth
+                    withSeparator: ListView.currentIndex !== 0 || footerButtonBox.standardButtons !== 0
+                    //corners.bottomLeftRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
+                    //corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
+                    action: modelData
                 }
             }
         }

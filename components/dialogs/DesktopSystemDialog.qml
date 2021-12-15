@@ -27,8 +27,8 @@ Item {
     readonly property alias dialogButtonBox: footerButtonBox
 
     property Window window
-    property real minimumHeight: column.Layout.minimumHeight
-    property real minimumWidth: column.Layout.minimumWidth
+    readonly property real minimumHeight: column.Layout.minimumHeight
+    readonly property real minimumWidth: column.Layout.minimumWidth
     
     property int flags: Qt.Dialog
 

@@ -17,6 +17,7 @@ import org.kde.kirigami 2.18 as Kirigami
 Kirigami.AbstractApplicationWindow {
     id: root
 
+    title: mainText
     /**
      * Main text of the dialog.
      */
@@ -62,7 +63,11 @@ Kirigami.AbstractApplicationWindow {
     signal accept()
     signal reject()
     property bool accepted: false
-    onAccept: accepted = true
+    onAccept: {
+        accepted = true
+        close()
+    }
+    onReject: close()
 
     onVisibleChanged: if (!visible && !accepted) {
         root.reject()

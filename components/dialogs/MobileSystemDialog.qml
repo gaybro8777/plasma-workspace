@@ -62,8 +62,6 @@ Item {
 
     required property Kirigami.AbstractApplicationWindow window
 
-    Kirigami.Theme.colorSet: Kirigami.Theme.View
-    Kirigami.Theme.inherit: false
     onWindowChanged: {
         window.color = Qt.binding(() => {
             return window.darkenBackground && visible && visibility === Qt.Fullscreen ? Qt.rgba(0, 0, 0, 0.5) : "transparent" // darken when fullscreen
@@ -291,15 +289,18 @@ Item {
         Layout.fillWidth: true
         onAccepted: root.window.accept()
         onRejected: root.window.reject()
+        implicitHeight: contentItem.implicitHeight
+        alignment: undefined
 
         readonly property real sameWidth: 50
         delegate: Private.MobileSystemDialogButton {
             Layout.fillWidth: true
             Layout.preferredWidth: footerButtonBox.sameWidth
 
-            readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y + height)) : Qt.point(0, 0)
-            withSeparator: globalPos.x > 0
-            corners.bottomLeftRadius: withSeparator ? 0 : root.dialogCornerRadius
+            readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y)) : Qt.point(0, 0)
+            verticalSeparator: globalPos.x > 0 && root.window.layout === Qt.Horizontal
+            horizontalSeparator: true
+            corners.bottomLeftRadius: verticalSeparator ? 0 : root.dialogCornerRadius
             corners.bottomRightRadius: globalPos.x >= footerButtonBox.width ? root.dialogCornerRadius : 0
         }
 
@@ -309,7 +310,6 @@ Item {
         bottomPadding: 0
 
         contentItem: GridLayout {
-            anchors.fill: parent
             Layout.fillWidth: true
 
             rowSpacing: 0
@@ -322,8 +322,9 @@ Item {
                 delegate: Private.MobileSystemDialogButton {
                     Layout.fillWidth: true
                     Layout.preferredWidth: footerButtonBox.sameWidth
-                    readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y + height)) : Qt.point(0, 0)
-                    withSeparator: globalPos.x > 0
+                    readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y)) : Qt.point(0, 0)
+                    verticalSeparator: globalPos.x > 0 && root.window.layout === Qt.Horizontal
+                    horizontalSeparator: true
                     corners.bottomLeftRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
                     corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
                     action: modelData

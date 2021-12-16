@@ -16,7 +16,8 @@ AbstractButton {
     
     property alias corners: background.corners
 
-    property bool withSeparator: false
+    property bool verticalSeparator: false
+    property bool horizontalSeparator: false
 
     background: Kirigami.ShadowedRectangle {
         id: background
@@ -39,9 +40,13 @@ AbstractButton {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            visible: root.withSeparator
-
-            z: 100
+            visible: root.verticalSeparator
+        }
+        Kirigami.Separator {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            visible: root.horizontalSeparator
         }
     }
     

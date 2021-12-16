@@ -20,11 +20,10 @@ Item {
     /**
      * Title of the dialog.
      */
-    property string mainText: title
-    property string title: ""
+    property string mainText: ""
     
     /**
-     * SubmainText of the dialog.
+     * Subtitle of the dialog.
      */
     property string subtitle: ""
     
@@ -52,43 +51,102 @@ Item {
      * This property holds the bottom padding of the content. If not specified, it uses `padding`.
      */
     property real bottomPadding: padding
-    
-    /**
-     * This property holds the list of actions for this dialog.
-     *
-     * Each action will be rendered as a button that the user will be able
-     * to click.
-     */
-    property list<Kirigami.Action> actions
 
-    readonly property int flags: Qt.Dialog
+    readonly property int flags: Qt.FramelessWindowHint | Qt.Dialog
+    property list<Kirigami.Action> actions
     property string iconName
     property real dialogCornerRadius: Kirigami.Units.smallSpacing * 2
-    
-    enum ActionLayout {
-        Row,
-        Column
+
+    readonly property real minimumHeight: loader.Layout.minimumHeight
+    readonly property real minimumWidth: loader.Layout.minimumWidth
+
+    required property Kirigami.AbstractApplicationWindow window
+
+    Kirigami.Theme.colorSet: Kirigami.Theme.View
+    Kirigami.Theme.inherit: false
+    onWindowChanged: {
+        window.color = Qt.binding(() => {
+            return window.darkenBackground && visible && visibility === Qt.Fullscreen ? Qt.rgba(0, 0, 0, 0.5) : "transparent" // darken when fullscreen
+        })
     }
 
-    readonly property real minimumHeight: column.Layout.minimumHeight
-    readonly property real minimumWidth: column.Layout.minimumWidth
+    // load in async to speed up load times (especially on embedded devices)
+    Loader {
+        id: loader
+        anchors.fill: parent
+        asynchronous: true
 
-    property Window window
+        sourceComponent: Item {
+            // margins for shadow
+            implicitWidth: control.implicitWidth + Kirigami.Units.gridUnit
+            implicitHeight: control.implicitHeight + Kirigami.Units.gridUnit
 
-    /**
-     * The layout of the action buttons in the footer of the dialog.
-     * 
-     * By default, if there are more than 3 actions, it will have `SystemDialog.Column`.
-     * 
-     * Otherwise, with zero to 2 actions, it will have `SystemDialog.Row`.
-     */
-    property int layout: actions.length > 3 ? 1 : 0
+            // shadow
+            RectangularGlow {
+                id: glow
+                anchors.topMargin: 1
+                anchors.fill: control
+                cached: true
+                glowRadius: 2
+                cornerRadius: Kirigami.Units.gridUnit
+                spread: 0.1
+                color: Qt.rgba(0, 0, 0, 0.4)
+            }
+
+            // actual window
+            Control {
+                id: control
+                anchors.fill: parent
+                anchors.margins: glow.cornerRadius
+                topPadding: 0
+                bottomPadding: 0
+                rightPadding: 0
+                leftPadding: 0
+
+                background: Item {
+                    Rectangle { // border
+                        anchors.fill: parent
+                        anchors.margins: -1
+                        radius: dialogCornerRadius + 1
+                        color: Qt.darker(Kirigami.Theme.backgroundColor, 1.5)
+                    }
+                    Rectangle { // background colour
+                        anchors.fill: parent
+                        radius: dialogCornerRadius
+                        color: Kirigami.Theme.backgroundColor
+                    }
+
+                    Kirigami.Icon { // close button
+                        id: closeIcon
+                        z: 1
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: Kirigami.Units.smallSpacing * 2
+                        visible: root.window.showCloseButton
+
+                        implicitHeight: Kirigami.Units.iconSizes.smallMedium
+                        implicitWidth: implicitHeight
+
+                        source: closeMouseArea.containsMouse ? "window-close" : "window-close-symbolic"
+                        active: closeMouseArea.containsMouse
+                        MouseArea {
+                            id: closeMouseArea
+                            hoverEnabled: Qt.styleHints.useHoverEffects
+                            anchors.fill: parent
+                            onClicked: root.close()
+                        }
+                    }
+                }
+
+                contentItem: column
+            }
+        }
+    }
     
-    ColumnLayout {
+    readonly property var contents: ColumnLayout {
         id: column
         spacing: 0
-        anchors.fill: parent
-        
+
         // header
         Control {
             id: headerControl
@@ -119,11 +177,11 @@ Item {
                 }
             }
         }
-        
+
         // content
         Control {
             id: content
-            
+
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.maximumWidth: root.window.maximumWidth
@@ -218,35 +276,56 @@ Item {
         }
         Control {
             Layout.fillWidth: true
-            padding: 0
+
+            leftPadding: 0
+            rightPadding: 0
+            topPadding: 0
+            bottomPadding: 0
             contentItem: footerButtonBox
         }
     }
 
     readonly property DialogButtonBox dialogButtonBox: DialogButtonBox {
         //We want to report the same width on all so the button area is split equally
-        readonly property real sameWidth: 50
-        Layout.fillWidth: true
         id: footerButtonBox
+        Layout.fillWidth: true
         onAccepted: root.window.accept()
         onRejected: root.window.reject()
+
+        readonly property real sameWidth: 50
         delegate: Private.MobileSystemDialogButton {
             Layout.fillWidth: true
-            withSeparator: true
             Layout.preferredWidth: footerButtonBox.sameWidth
+
+            readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y + height)) : Qt.point(0, 0)
+            withSeparator: globalPos.x > 0
+            corners.bottomLeftRadius: withSeparator ? 0 : root.dialogCornerRadius
+            corners.bottomRightRadius: globalPos.x >= footerButtonBox.width ? root.dialogCornerRadius : 0
         }
 
-        contentItem: RowLayout {
+        leftPadding: 0
+        rightPadding: 0
+        topPadding: 0
+        bottomPadding: 0
+
+        contentItem: GridLayout {
             anchors.fill: parent
             Layout.fillWidth: true
+
+            rowSpacing: 0
+            columnSpacing: 0
+            rows: root.window.layout === Qt.Vertical ? Number.MAX_VALUE : 1
+            columns: root.window.layout !== Qt.Vertical ? Number.MAX_VALUE : 1
+
             Repeater {
                 model: root.actions
                 delegate: Private.MobileSystemDialogButton {
                     Layout.fillWidth: true
                     Layout.preferredWidth: footerButtonBox.sameWidth
-                    withSeparator: ListView.currentIndex !== 0 || footerButtonBox.standardButtons !== 0
-                    //corners.bottomLeftRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
-                    //corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
+                    readonly property point globalPos: root.window.visible ? mapToItem(footerButtonBox, Qt.point(x, y + height)) : Qt.point(0, 0)
+                    withSeparator: globalPos.x > 0
+                    corners.bottomLeftRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
+                    corners.bottomRightRadius: model.index === root.actions.length - 1 ? root.dialogCornerRadius : 0
                     action: modelData
                 }
             }

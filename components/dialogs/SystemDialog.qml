@@ -21,17 +21,17 @@ Kirigami.AbstractApplicationWindow {
     /**
      * Main text of the dialog.
      */
-    property alias mainText: contentDialog.mainText
+    property string mainText: title
 
     /**
      * Subtitle of the dialog.
      */
-    property alias subtitle: contentDialog.subtitle
+    property string subtitle: ""
 
     /**
      * This property holds the icon used in the dialog.
      */
-    property alias iconName: contentDialog.iconName
+    property string iconName: ""
 
     /**
      * This property holds the list of actions for this dialog.
@@ -39,26 +39,47 @@ Kirigami.AbstractApplicationWindow {
      * Each action will be rendered as a button that the user will be able
      * to click.
      */
-    property alias actions: contentDialog.actions
+    property list<Kirigami.Action> actions
 
-    default property alias mainItem: contentDialog.mainItem
+    default property Item mainItem
 
     /**
      * This property holds the QQC2 DialogButtonBox used in the footer of the dialog.
      */
-    readonly property alias dialogButtonBox: contentDialog.dialogButtonBox
+    readonly property DialogButtonBox dialogButtonBox: contentDialog.item.dialogButtonBox
+
+    /**
+     * Provides dialogButtonBox.standardButtons
+     *
+     * Useful to be able to set it as dialogButtonBox will be null as the object gets built
+     */
+    property variant standardButtons: contentDialog.item ? contentDialog.item.dialogButtonBox.standardButtons : undefined
 
     /**
      * Controls whether the accept button is enabled
      */
     property bool acceptable: true
 
-    flags: contentDialog.flags
-    width: contentDialog.implicitWidth
-    height: contentDialog.implicitHeight
+    property bool showCloseButton: false
+
+
+    /**
+     * The layout of the action buttons in the footer of the dialog.
+     *
+     * By default, if there are more than 3 actions, it will have `Qt.Vertical`.
+     *
+     * Otherwise, with zero to 2 actions, it will have `Qt.Horizontal`.
+     *
+     * This will only affect on Mobile
+     */
+    property int /*Qt.Orientation*/ layout: actions.length > 3 ? Qt.Vertical : Qt.Horizontal
+
+    flags: contentDialog.item.flags
+    width: contentDialog.item.implicitWidth
+    height: contentDialog.item.implicitHeight
     visible: false
-    minimumWidth: contentDialog.minimumWidth
-    minimumHeight: contentDialog.minimumHeight
+    minimumWidth: contentDialog.item.minimumWidth
+    minimumHeight: contentDialog.item.minimumHeight
 
     signal accept()
     signal reject()
@@ -80,13 +101,37 @@ Kirigami.AbstractApplicationWindow {
         value: root.acceptable
     }
 
-    MobileSystemDialog {
+    Loader {
         id: contentDialog
         anchors.fill: parent
-
-        window: root
-        mainText: root.title
+        sourceComponent: Kirigami.Settings.tabletMode || true ? mobileDialog : desktopDialog
 
         Keys.onEscapePressed: root.reject()
+        focus: true
+    }
+
+    Component {
+        id: mobileDialog
+        MobileSystemDialog {
+            window: root
+            mainText: root.mainText
+            actions: root.actions
+            subtitle: root.subtitle
+            iconName: root.iconName
+            mainItem: root.mainItem
+            dialogButtonBox.standardButtons: root.standardButtons
+        }
+    }
+    Component {
+        id: desktopDialog
+        DesktopSystemDialog {
+            window: root
+            mainText: root.mainText
+            subtitle: root.subtitle
+            actions: root.actions
+            iconName: root.iconName
+            mainItem: root.mainItem
+            dialogButtonBox.standardButtons: root.standardButtons
+        }
     }
 }

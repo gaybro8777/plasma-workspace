@@ -25,7 +25,7 @@ Kirigami.AbstractApplicationWindow {
         subtitle: "This will reset all of your data."
         iconName: "documentinfo"
         
-        dialogButtonBox.standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
     }
     
     SystemDialog {
@@ -35,9 +35,7 @@ Kirigami.AbstractApplicationWindow {
         iconName: "documentinfo"
         
         width: Kirigami.Units.gridUnit * 17
-        Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
-        }
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
     }
     
     SystemDialog {
@@ -48,9 +46,7 @@ Kirigami.AbstractApplicationWindow {
 
         Kirigami.PasswordField {}
 
-        Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
-        }
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         actions: [
             Kirigami.Action {
                 text: "Details"
@@ -67,8 +63,8 @@ Kirigami.AbstractApplicationWindow {
         iconName: "kwallet"
         acceptable: false
 
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
             dialogButtonBox.standardButton(DialogButtonBox.Ok).text = "Share"
         }
         actions: [
@@ -89,9 +85,7 @@ Kirigami.AbstractApplicationWindow {
         
         Kirigami.PasswordField {}
         
-        Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
-        }
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         actions: [
             Kirigami.Action {
                 text: "Details"
@@ -119,9 +113,7 @@ Kirigami.AbstractApplicationWindow {
             }
         }
         
-        Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
-        }
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         actions: [
             Kirigami.Action {
                 text: "Details"
@@ -137,13 +129,10 @@ Kirigami.AbstractApplicationWindow {
         subtitle: "Please enter your SIM PIN in order to unlock it."
         
         width: Kirigami.Units.gridUnit * 20
-        
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
+
         Kirigami.PasswordField {
             Layout.fillWidth: true
-        }
-        
-        Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
         }
     }
     
@@ -151,6 +140,8 @@ Kirigami.AbstractApplicationWindow {
         id: device
         mainText: "Device Request"
         subtitle: "Allow <b>PureMaps</b> to access your location?"
+
+        layout: Qt.Vertical
 
         actions: [
             Kirigami.Action {
@@ -206,8 +197,8 @@ Kirigami.AbstractApplicationWindow {
             }
         }
 
+        standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
         Component.onCompleted: {
-            dialogButtonBox.standardButtons = DialogButtonBox.Ok | DialogButtonBox.Cancel
             dialogButtonBox.standardButton(DialogButtonBox.Ok).text = "Save"
         }
     }

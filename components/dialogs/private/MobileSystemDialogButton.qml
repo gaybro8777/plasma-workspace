@@ -34,6 +34,15 @@ AbstractButton {
                 return Kirigami.Theme.backgroundColor
             }
         }
+
+        Kirigami.Separator {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            visible: root.withSeparator
+
+            z: 100
+        }
     }
     
     leftPadding: Kirigami.Units.largeSpacing
@@ -45,10 +54,6 @@ AbstractButton {
         implicitHeight: row.height + Kirigami.Units.smallSpacing
         implicitWidth: row.implicitWidth
         RowLayout {
-            Kirigami.Separator {
-                visible: root.withSeparator
-            }
-
             id: row
             anchors.centerIn: parent
             spacing: 0

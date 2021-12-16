@@ -17,12 +17,8 @@ import org.kde.kirigami 2.18 as Kirigami
 Kirigami.AbstractApplicationWindow {
     id: root
     visible: false
-    
+
     flags: Qt.FramelessWindowHint | Qt.Dialog
-    Kirigami.Theme.colorSet: Kirigami.Theme.View
-    Kirigami.Theme.inherit: false
-    color: darkenBackground && visible && visibility === 5 ? Qt.rgba(0, 0, 0, 0.5) : "transparent" // darken when fullscreen
-    
     x: root.transientParent ? root.transientParent.x + root.transientParent.width / 2 - root.width / 2 : 0
     y: root.transientParent ? root.transientParent.y + root.transientParent.height / 2 - root.height / 2 : 0
     modality: darkenBackground && visibility !== 5 ? Qt.WindowModal : Qt.NonModal // darken parent window when not fullscreen
@@ -105,94 +101,4 @@ Kirigami.AbstractApplicationWindow {
     property real preferredWidth: -1
 
     property bool darkenBackground: true
-    
-    property bool showCloseButton: false
-    
-    property real dialogCornerRadius: Kirigami.Units.smallSpacing * 2
-    
-    width: loader.item.implicitWidth
-//     height: loader.item.implicitHeight
-
-    signal opened()
-    signal closed()
-
-    onVisibleChanged: {
-        if (visible) {
-            root.opened();
-        } else {
-            root.closed();
-        }
-    }
-    
-    // load in async to speed up load times (especially on embedded devices)
-    Loader {
-        id: loader
-        anchors.fill: parent
-        asynchronous: true
-        
-        sourceComponent: Item {
-            // margins for shadow
-            implicitWidth: control.implicitWidth + Kirigami.Units.gridUnit
-            implicitHeight: control.implicitHeight + Kirigami.Units.gridUnit
-            
-            // shadow
-            RectangularGlow {
-                id: glow
-                anchors.topMargin: 1 
-                anchors.fill: control
-                cached: true
-                glowRadius: 2
-                cornerRadius: Kirigami.Units.gridUnit
-                spread: 0.1
-                color: Qt.rgba(0, 0, 0, 0.4)
-            }
-            
-            // actual window
-            Control {
-                id: control
-                anchors.centerIn: parent
-                topPadding: 0
-                bottomPadding: 0
-                rightPadding: 0
-                leftPadding: 0
-            
-                background: Item {
-                    Rectangle { // border
-                        anchors.fill: parent
-                        anchors.margins: -1
-                        radius: dialogCornerRadius + 1
-                        color: Qt.darker(Kirigami.Theme.backgroundColor, 1.5)
-                    }
-                    Rectangle { // background colour
-                        anchors.fill: parent
-                        radius: dialogCornerRadius
-                        color: Kirigami.Theme.backgroundColor
-                    }
-                    
-                    Kirigami.Icon { // close button
-                        id: closeIcon
-                        z: 1
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.margins: Kirigami.Units.smallSpacing * 2
-                        visible: root.showCloseButton
-                        
-                        implicitHeight: Kirigami.Units.iconSizes.smallMedium
-                        implicitWidth: implicitHeight
-                        
-                        source: closeMouseArea.containsMouse ? "window-close" : "window-close-symbolic"
-                        active: closeMouseArea.containsMouse
-                        MouseArea {
-                            id: closeMouseArea
-                            hoverEnabled: Qt.styleHints.useHoverEffects
-                            anchors.fill: parent
-                            onClicked: root.close()
-                        }
-                    }
-                }
-                
-                contentItem: root.mainItem
-            }
-        }
-    }
 }

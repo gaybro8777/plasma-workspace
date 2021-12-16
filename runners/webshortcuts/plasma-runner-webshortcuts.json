@@ -59,9 +59,6 @@
         "Name[uk]": "Ключові слова пошуку в інтернеті",
         "Name[vi]": "Từ khoá tìm kiếm web",
         "Name[x-test]": "xxWeb Search Keywordsxx",
-        "ServiceTypes": [
-            "Plasma/Runner"
-        ],
         "Version": "1.0"
     },
     "X-KDE-ConfigModule": "kcm_webshortcuts"

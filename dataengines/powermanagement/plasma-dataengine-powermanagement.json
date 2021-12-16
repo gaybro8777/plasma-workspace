@@ -43,9 +43,6 @@
         "Name[uk]": "Керування живленням",
         "Name[vi]": "Quản lí nguồn điện",
         "Name[x-test]": "xxPower Managementxx",
-        "ServiceTypes": [
-            "Plasma/DataEngine"
-        ],
         "Version": "",
         "Website": "https://kde.org/plasma-desktop"
     }

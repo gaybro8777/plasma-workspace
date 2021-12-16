@@ -66,9 +66,6 @@
         "Name[vi]": "Tệp gần đây",
         "Name[x-test]": "xxRecent Filesxx",
         "Name[zh_CN]": "最近的文件",
-        "ServiceTypes": [
-            "Plasma/Runner"
-        ],
         "Version": "1.0"
     },
     "X-Plasma-Runner-Unique-Results": true

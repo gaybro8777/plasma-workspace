@@ -65,8 +65,7 @@
         "Name[uk]": "Нещодавні файли",
         "Name[vi]": "Tệp gần đây",
         "Name[x-test]": "xxRecent Filesxx",
-        "Name[zh_CN]": "最近的文件",
-        "Version": "1.0"
+        "Name[zh_CN]": "最近的文件"
     },
     "X-Plasma-Runner-Unique-Results": true
 }

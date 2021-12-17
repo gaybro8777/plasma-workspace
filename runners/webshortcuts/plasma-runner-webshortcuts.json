@@ -58,8 +58,7 @@
         "Name[ta]": "இணைய தேடல் முதன்மைச்சொற்கள்",
         "Name[uk]": "Ключові слова пошуку в інтернеті",
         "Name[vi]": "Từ khoá tìm kiếm web",
-        "Name[x-test]": "xxWeb Search Keywordsxx",
-        "Version": "1.0"
+        "Name[x-test]": "xxWeb Search Keywordsxx"
     },
     "X-KDE-ConfigModule": "kcm_webshortcuts"
 }

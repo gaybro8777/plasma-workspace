@@ -29,12 +29,37 @@ Kirigami.AbstractApplicationWindow {
     }
     
     SystemDialog {
-        id: simpleCSD
+        id: simpleList
         mainText: "Reset Data"
         subtitle: "This will reset all of your data."
         iconName: "documentinfo"
-        
-        width: Kirigami.Units.gridUnit * 17
+
+        ListView {
+            Layout.fillWidth: true
+            implicitHeight: 300
+
+            model: ListModel {
+                ListElement {
+                    display: "banana"
+                }
+                ListElement {
+                    display: "banana1"
+                }
+                ListElement {
+                    display: "banana2"
+                }
+                ListElement {
+                    display: "banana3"
+                }
+            }
+            delegate: Kirigami.BasicListItem {
+                icon: "kate"
+                label: display
+                highlighted: false
+                checkable: true
+            }
+        }
+
         standardButtons: DialogButtonBox.Ok | DialogButtonBox.Cancel
     }
     
@@ -220,12 +245,12 @@ Kirigami.AbstractApplicationWindow {
             }
         }
         Button {
-            text: "Simple dialog (Desktop CSD)"
+            text: "Simple List"
             onClicked: {
                 if (checkbox.checked) {
-                    simpleCSD.showFullScreen()
+                    simpleList.showFullScreen()
                 } else {
-                    simpleCSD.show()
+                    simpleList.show()
                 }
             }
         }

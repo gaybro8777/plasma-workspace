@@ -192,6 +192,7 @@ Item {
             background: Item {}
             contentItem: ColumnLayout {
                 spacing: 0
+                clip: true
 
                 Label {
                     id: subtitleLabel
@@ -252,7 +253,7 @@ Item {
                         target: root.mainItem
                         property: "width"
                         // we want to avoid horizontal scrolling, so we apply maximumWidth as a hint if necessary
-                        property real preferredWidthHint: contentControl.Layout.preferredWidth - root.leftPadding - root.rightPadding - contentControl.rightSpacing
+                        property real preferredWidthHint: contentControl.width - root.leftPadding - root.rightPadding - contentControl.rightSpacing
                         property real maximumWidthHint: contentControl.calculatedMaximumWidth - root.leftPadding - root.rightPadding - contentControl.rightSpacing
                         value: maximumWidthHint < preferredWidthHint ? maximumWidthHint : preferredWidthHint
                     }
